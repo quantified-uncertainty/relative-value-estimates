@@ -100,7 +100,7 @@ interventions = [
 relativeDivide= {|x, y|  // x / y 
   epsilon = 10^(-10)
   xs = SampleSet.toList(SampleSet.fromDist(x))
-  ys = SampleSet.toList(SampleSet.fromDist(x))
+  ys = SampleSet.toList(SampleSet.fromDist(y))
   l = List.length(xs)
   ls = List.upTo(0, l-1)
   acc_init = {
@@ -174,7 +174,14 @@ relative_values = [
   {
     description: "Fish Welfare Initiative's impact so far / Impact of AMF in 2021",
     value: relativeDivide(interventions[0].value, interventions[1].value)
+  },
+    {
+    description: "Fish Welfare Initiative's impact so far / Value of preventing large asteroid impacts for 1 year",
+    value: relativeDivide(interventions[0].value, interventions[2].value)
+  },
+    {
+    description: "Impact of AMF in 2021 / Value of preventing large asteroid impacts for 1 year",
+    value: relativeDivide(interventions[1].value, interventions[2].value)
   }
 ]
-
 relative_values
