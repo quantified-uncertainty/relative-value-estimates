@@ -1,8 +1,8 @@
 x = mx([0, 1 to 10])
-y = mx([0, 1 to 100])
-
+y = mx([0, 1 to 10, -(1 to 10)])
 
 relativeDivide= {|x, y|  // x / y 
+  epsilon = 10^(-10)
   xs = SampleSet.toList(SampleSet.fromDist(x))
   ys = SampleSet.toList(SampleSet.fromDist(x))
   l = List.length(xs)
@@ -18,9 +18,9 @@ relativeDivide= {|x, y|  // x / y
       s1 = xs[li]
       s2 = ys[li]
       new_acc = (
-        if s2 == 0 then {
+        if abs(s2)<epsilon then {
           (
-            if s1 == 0 then {
+            if abs(s1)<epsilon then {
               {
                 minus_infinity: acc.minus_infinity,
                 plus_infinity: acc.plus_infinity,
@@ -63,7 +63,7 @@ relativeDivide= {|x, y|  // x / y
     minus_infinity: relative_values_unprocessed.minus_infinity / l,
     plus_infinity: relative_values_unprocessed.plus_infinity / l,
     zero_over_zero: relative_values_unprocessed.zero_over_zero / l,
-    samples: relative_values_unprocessed.samples,
+    standard_dist: SampleSet.fromList(relative_values_unprocessed.samples),
     p_samples: 1-(num_deviant_samples)/l,
   })
   relative_values_processed

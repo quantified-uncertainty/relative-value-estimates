@@ -1,0 +1,180 @@
+/*
+This document will contain relative values for three interventions. It is meant to illustrated using relative values as an alternative approach to Open Philanthropy's worldview diversification.
+*/
+
+/* Moral values */
+p_sealife_valuable = 0.3
+value_of_fish_if_valuable = SampleSet.fromDist(beta(2.4332243641111515, 1082.87990591767)) 
+value_of_shrimp_if_valuable = value_of_fish_if_valuable
+// value relative to humans
+// ^ 90% confidence interval 5/10k to 5/1k
+// use of SampleSet so that it's correlated
+// i.e., either fish and shrimp are both valuable, or neither is.
+
+
+/* Fish Welfare Initiative 
+Sources: 
+- https://www.fishwelfareinitiative.org/impact
+- https://forum.effectivealtruism.org/posts/T5fSphiK6sQ6hyptX/opinion-estimating-invertebrate-sentience#Peter_Hurford
+- https://forum.effectivealtruism.org/posts/Qk3hd6PrFManj8K6o/rethink-priorities-welfare-range-estimates
+- https://nunosempere.com/blog/2023/02/19/bayesian-adjustment-to-rethink-priorities-welfare-range-estimates/
+
+*/
+fish_potentially_helped = 1M to 2M
+shrimp_potentially_helped = 1M to 2M
+
+timespan_fish_helped = 0.5 to 2 
+// years; FWI hasn't been around for that long. 
+
+value_fwi_if_sealife_valuable = 
+  timespan_fish_helped * (
+    fish_potentially_helped * value_of_fish_if_valuable + 
+  shrimp_potentially_helped * value_of_shrimp_if_valuable
+  )
+
+value_fwi = mixture(
+  [0, value_fwi_if_sealife_valuable],
+   [1-p_sealife_valuable, p_sealife_valuable]
+  )
+
+/* Against Malaria Foundation */
+ cost_effectiveness_per_dollar_Tanae = 0.011 to 0.0821
+ // ^source:  <https://observablehq.com/d/43b277c2743896a6> (<https://observablehq.com/@tanaerao/malaria-nets-analysis>)
+ cost_effectiveness_per_dollar_with_counterfactual = mixture(
+  [
+    0, 
+    cost_effectiveness_per_dollar_Tanae,
+    -cost_effectiveness_per_dollar_Tanae
+  ],
+  [0.1, 0.8, 0.1]
+ )
+budget_amf_2021 = 92M
+// ^ https://www.causeiq.com/organizations/view_990/203069841/18a54235eb7569bea4f7440340e1f3bf
+value_amf_2021 = cost_effectiveness_per_dollar_with_counterfactual * budget_amf_2021
+
+/* Value of avoiding at least medium-sized asteroid impacts for a year 
+Sources: 
+- https://forum.effectivealtruism.org/posts/mL2t47FzGqcsPXv6i/shallow-report-on-asteroids
+*/
+
+tunguska_like_asteroid_event_loss =  1.94 * 10e7 // DALYs.
+tunguska_yearly_probability = 0.5/100
+
+large_sub_global_asteroid_event_loss = 2.76 * 10e8 
+large_probability = 0.004/100
+
+global_asteroid_event_loss =  4.55 * 10e11 
+global_probability = 0.0002/100
+
+rare_k_t_scale_asteroid_event_loss = 8.42 * 10e11 
+rare_probability= 0.000001/100
+
+p_no_large_asteroids = 1 - (tunguska_yearly_probability + large_probability + global_probability + rare_probability)
+
+value_no_large_asteroids_year = mixture(
+  [tunguska_like_asteroid_event_loss, large_sub_global_asteroid_event_loss, global_asteroid_event_loss, rare_k_t_scale_asteroid_event_loss, 0],
+  [tunguska_yearly_probability, large_probability, global_probability, rare_probability, p_no_large_asteroids]
+)
+
+// Create objects
+
+interventions = [
+  {
+    id: 1, 
+    name: "Fish Welfare Initiative's impact so far", 
+    value: value_fwi
+  },
+  {
+    id: 2, 
+    name: "Impact of AMF in 2021", 
+    value: value_amf_2021
+  },
+  {
+    id: 3, 
+    name: "Value of preventing large asteroid impacts for 1 year", 
+    value: value_no_large_asteroids_year
+  }
+]
+
+// Relative divide function
+relativeDivide= {|x, y|  // x / y 
+  epsilon = 10^(-10)
+  xs = SampleSet.toList(SampleSet.fromDist(x))
+  ys = SampleSet.toList(SampleSet.fromDist(x))
+  l = List.length(xs)
+  ls = List.upTo(0, l-1)
+  acc_init = {
+    minus_infinity: 0,
+    plus_infinity: 0,
+    zero_over_zero: 0,
+    samples: [],
+  }
+  relative_values_unprocessed = List.reduce(ls, acc_init, 
+    {|acc, li| 
+      s1 = xs[li]
+      s2 = ys[li]
+      new_acc = (
+        if abs(s2)<epsilon then {
+          (
+            if abs(s1)<epsilon then {
+              {
+                minus_infinity: acc.minus_infinity,
+                plus_infinity: acc.plus_infinity,
+                zero_over_zero: acc.zero_over_zero + 1,
+                samples: acc.samples,
+              }
+            } else {
+              {
+                minus_infinity: acc.minus_infinity + (s1 < 0 ? 1 : 0),
+                plus_infinity: acc.plus_infinity + (s1 > 0 ? 1 : 0),
+                zero_over_zero: acc.zero_over_zero,
+                samples: acc.samples,
+              }
+            }
+          )
+
+        } else {
+          n = List.length(acc.samples)
+          helper_list = List.upTo(0, n) 
+          // ^ n+1 items, so space for one more
+          new_sample = s1 / s2
+          new_samples = List.map(helper_list, {|i|
+            i < n ? acc.samples[i] : new_sample
+          })
+          {
+            minus_infinity: acc.minus_infinity,
+            plus_infinity: acc.plus_infinity,
+            zero_over_zero: acc.zero_over_zero,
+            samples: new_samples,
+          }
+        }
+      )
+      new_acc
+  })
+  num_deviant_samples = 
+    relative_values_unprocessed.minus_infinity +
+    relative_values_unprocessed.plus_infinity +
+    relative_values_unprocessed.zero_over_zero
+  relative_values_processed = ({
+    minus_infinity: relative_values_unprocessed.minus_infinity / l,
+    plus_infinity: relative_values_unprocessed.plus_infinity / l,
+    zero_over_zero: relative_values_unprocessed.zero_over_zero / l,
+    standard_dist: SampleSet.fromList(relative_values_unprocessed.samples),
+    p_samples: 1-(num_deviant_samples)/l,
+    n_samples: List.length(relative_values_unprocessed.samples)
+  })
+  relative_values_processed
+  
+}
+
+
+// Compute the relative values.
+
+relative_values = [
+  {
+    description: "Fish Welfare Initiative's impact so far / Impact of AMF in 2021",
+    value: relativeDivide(interventions[0].value, interventions[1].value)
+  }
+]
+
+relative_values
