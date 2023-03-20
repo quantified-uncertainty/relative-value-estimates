@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "compile": "^0.0.2",
+    "squiggle-cli-experimental": "^0.0.3"
+  }
+}

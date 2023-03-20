@@ -1,0 +1,116 @@
+moral = {
+  // I've noticed that my values depending on whether I am feeling threatened, or whether I am feeling a stance I'm going to name "scarcity". So I'm going to decompose these relative estimates according to that factor
+  scarcity_level = beta(3.474899535735899, 8.973440033916177) // 0.1 to 1/2
+  id(x) = x
+  weight_egoism = id(scarcity_level) 
+  // ^just identity function for now, 
+  /// but could become something more complicated later
+  moral_components = {
+    egoism: weight_egoism, 
+    human_centric_consequentialism: (1-weight_egoism)*3/4, 
+    animal_inclusive_consequentialism: (1-weight_egoism)*1/4
+  }
+
+  {
+    components: moral_components,
+    mixture: [mean(moral_components.egoism), mean(moral_components.human_centric_consequentialism), mean(moral_components.animal_inclusive_consequentialism)]
+  }
+}
+
+
+/* Fish Welfare Initiative*/
+// Taken from worldview.squiggleU
+
+/* Moral values */
+p_sealife_valuable = 0.3
+value_of_fish_if_valuable = SampleSet.fromDist(beta(2.4332243641111515, 1082.87990591767)) // 0.0005 to 0.005
+value_of_shrimp_if_valuable = value_of_fish_if_valuable
+// value relative to humans
+// ^ 90% confidence interval 5/10k to 5/1k
+// use of SampleSet so that it's correlated
+// i.e., either fish and shrimp are both valuable, or neither is.
+// note that this is *inconsistent* with the value in qalys.squiggle.
+
+/* Fish Welfare Initiative 
+Sources: 
+- https://www.fishwelfareinitiative.org/impact
+- https://forum.effectivealtruism.org/posts/T5fSphiK6sQ6hyptX/opinion-estimating-invertebrate-sentience#Peter_Hurford
+- https://forum.effectivealtruism.org/posts/Qk3hd6PrFManj8K6o/rethink-priorities-welfare-range-estimates
+- https://nunosempere.com/blog/2023/02/19/bayesian-adjustment-to-rethink-priorities-welfare-range-estimates/
+
+*/
+fish_potentially_helped = 1M to 2M
+shrimp_potentially_helped = 1M to 2M
+
+timespan_fish_helped = 0.5 to 2 
+// years; FWI hasn't been around for that long. 
+
+value_fwi_if_sealife_valuable = 
+  timespan_fish_helped * (
+    fish_potentially_helped * value_of_fish_if_valuable + 
+  shrimp_potentially_helped * value_of_shrimp_if_valuable
+  )
+
+value_fwi = mixture(
+  [0, value_fwi_if_sealife_valuable],
+   [1-p_sealife_valuable, p_sealife_valuable]
+  )
+
+
+/* Wild Animal Initiative */
+
+/*
+Estimation strategy:
+- For now, I am choosing to model its impact as a chance that it influences further donations. Key parameters will be: how much funding has it influenced so far, what the value of that funding it.
+- Note that my impression is that WAI has funded _research_, but not things which ultimately cash out in improved animal welfare, which is what I am estimating
+- Note also that this is a bit underdefined, i.e., I'm not sure whether I'm talking about funding influenced so far or about funding which will be influenced.
+*/
+
+/* Sources
+- https://www.openphilanthropy.org/grants/wild-animal-initiative-animal-welfare-research/
+- https://www.wildanimalinitiative.org/
+- https://www.wildanimalinitiative.org/services
+*/
+
+funding_moved = mixture(
+  [0, truncate(1M to 10M, 0, 100M), truncate(5M to 200M, 0, 1B)], [0.5, 0.4, 0.1]
+  )
+amf_baseline_cost_effectiveness_per_dollar = truncate(0.011 to 0.0821, 0, 1)
+animal_advantage = truncate(0.1 to 1000, 0, 1M)
+value_of_funding_in_animal_inclusive_consequentialism = amf_baseline_cost_effectiveness_per_dollar * animal_advantage * funding_moved
+
+value_of_funding_in_human_qalys = mixture([0, 0, value_of_funding_in_animal_inclusive_consequentialism], moral.mixture)
+
+value_wai =  value_of_funding_in_human_qalys
+
+/* Value of Beyond Meat in 2023 */
+
+/* Sources 
+- https://apnews.com/article/mcdonalds-corp-europe-business-a5b9d53c77f6df945fd2ecb9a18ca1a1
+  - "On Thursday, Walmart was advertising Beyond Meat burgers at $9.68 per pound; lean ground beef was $5.86 per pound."
+  - Beyond Meat said it expects net revenue in the range of $375 million to $415 million this year, which would be lower than the $418 million in reported in 2022. 
+- https://faunafacts.com/cows/how-many-burgers-in-one-cow/
+- https://www.ams.usda.gov/grades-standards/slaughter-cattle-grades-and-standards: 30 to 42 months
+*/
+
+avg_price_per_pound = 5 to 12
+revenues = 375M to 415M
+pounds_sold = revenues / avg_price_per_pound
+
+quarter_pounders_per_cow = 1000 to 1600
+pounds_per_cow = quarter_pounders_per_cow / 4
+cows_saved_if_all_meat_was_counterfactual = pounds_sold / pounds_per_cow 
+// ^ passes sanity check, 28.9 million beef cows in the United States as of Jan. 1, 2023 (https://www.nass.usda.gov/Newsroom/2023/01-31-2023.php), and Beyond Burgers sells globally
+fraction_which_is_counterfactual = mixture(
+  [beta(5.425747521318943, 41.488997052291325), beta(1.9894047192566546, 6.370718188981973)],
+  [0.7, 0.3]
+) 
+// ^ mixture([0.05 to 0.2, 0.05 to 0.5], [0.7, 0.3]) 
+// from <https://nunosempere.com/blog/2023/03/15/fit-beta/>
+
+cows_saved = cows_saved_if_all_meat_was_counterfactual * fraction_which_is_counterfactual
+value_of_cow = mixture([0, 0.01 to 0.4], [0.5, 0.5]) // to do: fix, use the moral weights instead?
+lifespan_beef_cow = (30 to 42 ) / 12
+human_qaly_equivalents = cows_saved * value_of_cow * lifespan_beef_cow
+value_beyond_meat_2023 = human_qaly_equivalents
+value_beyond_meat_2023

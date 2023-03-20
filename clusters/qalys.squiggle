@@ -1,0 +1,81 @@
+moral = {
+  // I've noticed that my values depending on whether I am feeling threatened, or whether I am feeling a stance I'm going to name "scarcity". So I'm going to decompose these relative estimates according to that factor
+  scarcity_level = beta(3.474899535735899, 8.973440033916177) // 0.1 to 1/2
+  id(x) = x
+  weight_egoism = id(scarcity_level) 
+  // ^just identity function for now, 
+  /// but could become something more complicated later
+  moral_components = {
+    egoism: weight_egoism, 
+    human_centric_consequentialism: (1-weight_egoism)*3/4, 
+    animal_inclusive_consequentialism: (1-weight_egoism)*1/4
+  }
+
+  {
+    components: moral_components,
+    mixture: [mean(moral_components.egoism), mean(moral_components.human_centric_consequentialism), mean(moral_components.animal_inclusive_consequentialism)]
+  }
+}
+// My own self
+value_own_qaly = 1
+
+
+
+// Value of a generic human QALY
+// arrary_value_stranger_qaly = 
+f_value_stranger_qualy = {|moral_components|  
+  result = mixture([0,1, 1], 
+      [ mean(moral_components.egoism), mean(moral_components.human_centric_consequentialism), mean(moral_components.animal_inclusive_consequentialism)]
+  )
+  result 
+}
+value_stranger_qualy = f_value_stranger_qualy(moral.components)
+
+// Value of a cow QALY
+f_value_cow_qualy = {|moral_components|  
+  result = mixture(
+    [0,0,beta(0.9446304863245985, 4.19091210982098) /* 0.01 to 0.5 */], 
+    [ mean(moral_components.egoism), mean(moral_components.human_centric_consequentialism), mean(moral_components.animal_inclusive_consequentialism)]
+  )
+  result 
+}
+value_cow_qualy = f_value_cow_qualy(moral.components)
+
+// Value of a salmon QALY
+f_value_salmon_qaly = {|moral_components| 
+  result = mixture(
+    [0, 0, beta(2.4291692884607676, 539.094857198332)/* 0.001 to 0.01 */], 
+    [ mean(moral_components.egoism), mean(moral_components.human_centric_consequentialism), mean(moral_components.animal_inclusive_consequentialism)]
+  )
+  result 
+}
+value_salmon_qualy = f_value_salmon_qaly(moral.components)
+
+interventions = [
+  {
+    id: 1, 
+    name: "Value of one additional year of my own life, at the health I had @ 24 years old.", 
+    value: value_own_qaly
+  },
+  {
+    id: 2, 
+    name: "Value of one generic human QALY", 
+    value: value_stranger_qualy
+  },
+  {
+    id: 3, 
+    name: "Value of one generic cow QALY", 
+    value: value_cow_qualy
+  },
+  {
+    id: 4,
+    name: "Value of one salmon QALY",
+    value: value_salmon_qualy
+  }
+]
+
+interventions
+
+// to do: how to make the mixtures correlate? 
+// maybe just give the three relative valeus
+// and have a custom relative values function?

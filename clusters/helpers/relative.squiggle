@@ -1,8 +1,6 @@
-x = mx([0, 1 to 10])
-y = mx([0, 1 to 10, -(1 to 10)])
-
+// Relative divide function
 relativeDivide= {|x, y|  // x / y 
-  epsilon = 10^(-10)
+  epsilon = 10^(-8)
   xs = SampleSet.toList(SampleSet.fromDist(x))
   ys = SampleSet.toList(SampleSet.fromDist(y))
   l = List.length(xs)
@@ -64,9 +62,36 @@ relativeDivide= {|x, y|  // x / y
     plus_infinity: relative_values_unprocessed.plus_infinity / l,
     zero_over_zero: relative_values_unprocessed.zero_over_zero / l,
     standard_dist: SampleSet.fromList(relative_values_unprocessed.samples),
-    p_samples: 1-(num_deviant_samples)/l,
+    p_standard_dist: 1-(num_deviant_samples)/l,
   })
   relative_values_processed
+  
 }
 
-relativeDivide(x,y)
+
+
+getRelativeValues = {|intervention_1, intervention_2|
+  if intervention_1.id == intervention_2.id then {
+    {
+      meta: {
+        numerator: intervention_1.name,
+        denominator: intervention_2.name
+      },
+      relative_value: 1,
+    }
+  } else {
+    {
+      meta: {
+        numerator: intervention_1.name,
+        denominator: intervention_2.name
+      },
+      ratio_of_means: mean(intervention_1.value)/mean(intervention_2.value),
+      relative_value: relativeDivide(intervention_1.value, intervention_2.value),
+    }
+  }
+}
+
+{
+  divide: relativeDivide,
+  values: getRelativeValues
+}

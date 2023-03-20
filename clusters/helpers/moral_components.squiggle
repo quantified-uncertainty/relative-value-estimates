@@ -1,0 +1,16 @@
+// I've noticed that my values depending on whether I am feeling threatened, or whether I am feeling a stance I'm going to name "scarcity". So I'm going to decompose these relative estimates according to that factor
+scarcity_level = beta(3.474899535735899, 8.973440033916177) // 0.1 to 1/2
+id(x) = x
+weight_egoism = id(scarcity_level) 
+// ^just identity function for now, 
+/// but could become something more complicated later
+moral_components = {
+  egoism: weight_egoism, 
+  human_centric_consequentialism: (1-weight_egoism)*3/4, 
+  animal_inclusive_consequentialism: (1-weight_egoism)*1/4
+}
+
+{
+  components: moral_components,
+  mixture: [mean(moral_components.egoism), mean(moral_components.human_centric_consequentialism), mean(moral_components.animal_inclusive_consequentialism)]
+}
