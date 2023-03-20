@@ -2,5 +2,9 @@
   "dependencies": {
     "compile": "^0.0.2",
     "squiggle-cli-experimental": "^0.0.3"
-  }
+  },
+	"scripts": {
+		"compile": "squiggle-cli-experimental compile",
+		"watch": "squiggle-cli-experimental watch"
+	}
 }

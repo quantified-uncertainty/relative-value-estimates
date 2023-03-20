@@ -5,26 +5,30 @@ Purpose: Have a list of things to estimate to showcase relative values
 Possible constraints: Have estimates that are “the kinds of things that I would like to estimate”
 
 Cluster: Marginal funding
-
 - Value of $50k of marginal funding out of the door for Open Philanthropy in 2021
 - Value of $50k of marginal funding out of the door for EA Infrastructure Fund in 2021
 - Value of $50k of marginal funding out of the door for FTX Foundation in 2022
 
-- [x] Cluster: Abstract moral value 
-  - [x] Value of one year of my QALYs (e.g., one additional year at current health)
-  - [x] Value of one human QALY
-  - [x] Value of one cow-QALY
-  - [x] Value of one fish-QALY
+[x] Cluster: Abstract moral value 
+- [x] Value of one year of my QALYs (e.g., one additional year at current health)
+- [x] Value of one human QALY
+- [x] Value of one cow-QALY
+- [x] Value of one fish-QALY
 
-Cluster: Value of concrete animal charities
-
+[x] Cluster: Value of concrete animal charities
 - [x] Value of the work of the Fish Welfare Initiative so far
 - [x] Value of the work of the Wild Animal Initiative so far
 - [x] Value of ~~Impossible Foods~~ Beyond Burgers in 2023
 
-Cluster: Decisions from the QURI team
-Subcluster: Ozzie
+[x] Cluster: Value of QURI research
+- [x] Value of 1h managing operations (Nics/Maria, but saying "ops" so that it is readable by people without much context)
+- [x] Value of 1h of Ozzie's freeform research and theorizing
+- [ ] 1h of Ozzie managing Slava
+- [x] 1h of Ozzie managing Nuño's research
+- [x] Value of 1h of Nuño's time researching
+- [x] Value of 1h of Slava's time programming
 
+[-] Cluster: Decisions from the QURI team: Deprecated
 - Value of 1h managing Nuño/Nics/Slava
 - Value of 1h working on Rethink Priorities board member duties
 - Value of 1h of freeform research
@@ -32,7 +36,6 @@ Subcluster: Ozzie
 - Value of all FB posts Ozzie posted in 2022
 
 Cluster: Forecasting orgs
-
 - Value of Samotsvety in 2022
 - Value of QURI in 2022
 - Value of Metaculus in 2022

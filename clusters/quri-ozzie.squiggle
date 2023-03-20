@@ -1,0 +1,54 @@
+/*
+Value of various activities Ozzie can be doing
+
+The way to model this might be:
+- QURI is a black box which produces research outputs
+- Ops are necessary to keep the black box running, but it's unclear how many hours.
+
+Things to compare:
+
+- Value of 1h managing operations (Nics/Maria, but saying "ops" so that it is readable by people without much context)
+- Value of 1h of Ozzie's freeform research and theorizing
+- Value of 1h of Nuño's time researching
+- Value of 1h of Slava's time programming
+- [ Not done ] 1h of Ozzie managing Slava
+- 1h of Ozzie managing Nuño's research
+
+Ignoring:
+- FB
+- RP board member
+Because the comparison wouldn't be as neat
+
+*/
+
+/* Managing operations 
+The way I am choosing to model this is that there is a number of hours of necessary operations, without which QURI breaks,
+and hours beyond that are not necessary.
+
+This is very simplistic, because it doesn't take into account how ops can do things other than make QURI not break,
+e.g., organize contests, help Slava get a visa, make research go faster, etc.
+*/
+
+p_marginal_ops_hour_is_necessary = 0.3 // uninformed guess
+unlocked_hours_if_necessary = 1 to 10
+value_managing_ops = mixture([0, unlocked_hours_if_necessary], [1-p_marginal_ops_hour_is_necessary, p_marginal_ops_hour_is_necessary]) 
+
+/* Freeform research */
+value_freeform_research = mixture([0, 0.5 to 20], [0.2, 0.8])
+// compared to an "average" hour of QURI's research
+// source: vibes
+
+/* Managing Nuño's research */
+value_managing_researcher = mixture([0, 1 to 10], [0.4, 0.6])
+// sometimes these are basically useless, 
+// but sometimes they are very useful
+
+/* Value of 1h of Slava's time programming */
+value_quri_programming = 0.5 to 2
+
+/* Value of the median 1h of my (Nuño's) time researching */
+value_median_quri_research_hour = 1 // baseline unit
+// note that I think that the value of the median hour of my time is much worse
+// than the expected value of a research hour, since sometimes I am inspired
+// and I produce fairly valuable stuff
+
