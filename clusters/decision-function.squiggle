@@ -1,0 +1,27 @@
+decision = { |nAnimals|
+  value_of_salmon_in_human_qualys = mixture([0,0,beta(0.9446304863245985, 4.19091210982098)], [1,1,1] )
+  relative_utils =  nAnimals * value_of_animals_in_humans
+  if mean(relative_utils) > 1 then {
+    1
+  } else {
+    0
+  }
+
+}
+
+m = mixture([0,0,beta(0.9446304863245985, 4.19091210982098)], [1,1,1] )
+value_animals = sampleN(m , 1)[0]
+decision_sampling = { |nAnimals|
+
+  value_of_animals_in_humans = value_animals
+  relative_utils =  nAnimals * value_of_animals_in_humans
+  if relative_utils > 1 then {
+    1
+  } else {
+    0
+  }
+
+}
+
+decision_sampling
+ 
