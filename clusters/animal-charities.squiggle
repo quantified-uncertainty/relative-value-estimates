@@ -90,6 +90,7 @@ value_wai =  value_of_funding_in_human_qalys
   - "On Thursday, Walmart was advertising Beyond Meat burgers at $9.68 per pound; lean ground beef was $5.86 per pound."
   - Beyond Meat said it expects net revenue in the range of $375 million to $415 million this year, which would be lower than the $418 million in reported in 2022. 
 - https://faunafacts.com/cows/how-many-burgers-in-one-cow/
+- https://www.ams.usda.gov/grades-standards/slaughter-cattle-grades-and-standards: 30 to 42 months of age for beef cows
 */
 
 avg_price_per_pound = 5 to 12

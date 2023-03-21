@@ -1,0 +1,154 @@
+/* Combined model
+
+Purpose: Give relative values for everything in a list of 10-20 elements
+
+In particular, give expected(A)/expected(B), and then add one order of magnitude
+to either side. 
+
+*/
+
+// # GENERAL FACTORS
+
+moral_circle = {
+  egoism: 3, // nuno qalys 
+  human_centric_consequentialism: 6, // generic human qalys
+  large_animal_inclusive_consequentialism: 1, // cow / pig qalys
+  small_animal_inclusive_consequentialism: 0.2 // fish qalys
+}
+
+value_of_fish_qalys_relative_to_human_qalys_under_small_animal_inclusive_consequentialism = beta(0.8277362357555023, 25.259989675532076)
+// ^ 0.001 to 0.1, from <https://nunosempere.com/blog/2023/03/15/fit-beta/>
+value_of_shrimp_qalys_relative_to_human_qalys_under_small_animal_inclusive_consequentialism = value_of_fish_qalys_relative_to_human_qalys_under_small_animal_inclusive_consequentialism
+// ^ seems funny to consider shrimp as valuable as fish
+// because I feel more warmly towards fish
+// But this isn't an overriding consideration, 
+// because they seem similarly complex animals
+value_of_small_animal_qalys_relative_to_human_qalys_under_small_animal_inclusive_consequentialism = value_of_fish_qalys_relative_to_human_qalys_under_small_animal_inclusive_consequentialism
+// taking fish as a representative of "small animal"
+
+// # INTERVENTIONS BY CLUSTER 
+
+// ## Cluster 1: Animal charities
+
+// Intervention 1: Fish Welfare Initiative's work so far
+/* Sources
+- https://www.fishwelfareinitiative.org/impact
+- https://forum.effectivealtruism.org/posts/T5fSphiK6sQ6hyptX/opinion-estimating-invertebrate-sentience#Peter_Hurford
+- https://forum.effectivealtruism.org/posts/Qk3hd6PrFManj8K6o/rethink-priorities-welfare-range-estimates
+- https://nunosempere.com/blog/2023/02/19/bayesian-adjustment-to-rethink-priorities-welfare-range-estimates/
+*/
+
+number_of_fish_potentially_helped_by_fwi = 1M to 2M
+number_of_shrimp_potentially_helped_by_fwi = 1M to 2M
+// ^ [animal] potentially helped 
+// is a measure from fwi's own assessment 
+// (<https://www.fishwelfareinitiative.org/impact>)
+
+timespan_fish_helped = 0.5 to 2 
+proportion_qaly_improvement = beta(1.9894047192566546, 6.370718188981973)
+// ^ 90% confidence interval is 0.05 to 0.5, from <https://nunosempere.com/blog/2023/03/15/fit-beta/>.
+// I'm just really unsure ¯\_(ツ)_/¯
+
+num_small_animal_qalys_fwi = timespan_fish_helped * (number_of_fish_potentially_helped_by_fwi  + number_of_shrimp_potentially_helped_by_fwi) * proportion_qaly_improvement
+
+item_fwi = {
+  name: "Fish Welfare Initiative",
+  description: "Value of the Fish Welfare Initiative's work so far as outlined in <https://www.fishwelfareinitiative.org/impact> as of 21/03/2023 (<https://web.archive.org/web/20230315011504/https://www.fishwelfareinitiative.org/impact>). The reasoning for not disaggregating by year is that their impact page (<https://www.fishwelfareinitiative.org/impact>) doesn't.",
+  value: {
+      nuno_qalys: 0,
+      human_qalys: 0,
+      large_animal_qalys: 0,
+      small_animal_qalys: num_small_animal_qalys_fwi
+  }
+}
+
+// Intervention 2: Wild Animal Initiative 
+
+/* Estimation strategy:
+- For now, I am choosing to model its impact as a chance that it influences further donations. Key parameters will be: how much funding has it influenced so far, what the value of that funding it.
+- Note that my impression is that WAI has funded _research_, but not things which ultimately cash out in improved animal welfare, which is what I am estimating
+- Note also that this is a bit underdefined, i.e., I'm not sure whether I'm talking about funding influenced so far or about funding which will be influenced.
+*/
+
+/* Sources
+- https://www.openphilanthropy.org/grants/wild-animal-initiative-animal-welfare-research/
+- https://www.wildanimalinitiative.org/
+- https://www.wildanimalinitiative.org/services
+*/
+
+funding_moved = mixture(
+  [0, truncate(1M to 10M, 0, 100M), truncate(5M to 200M, 0, 1B)], [0.5, 0.4, 0.1]
+  )
+share_of_funding_to_large_animals = SampleSet.fromDist(beta(3.261811017550073, 3.2618060609030035))
+// ^ beta whose 90% confidence interval is 0.2 to 0.8, from <https://nunosempere.com/blog/2023/03/15/fit-beta/>
+// I'm just very unsure
+// The sampleset is so that we can preserve correlation, i.e., so that
+// share_of_funding_to_large_animals + share_of_funding_to_small_animals = 1 (!) :^)
+share_of_funding_to_small_animals = 1 - share_of_funding_to_large_animals
+// you can see that 
+// share_of_funding_to_large_animals + share_of_funding_to_small_animals
+// is equal to 1, in Squiggle, just paste the preceding lines into 
+// https://www.squiggle-language.com/playground
+// :^)
+
+amf_baseline_cost_effectiveness_per_dollar = truncate(0.011 to 0.0821, 0, 1)
+
+large_animal_advantage = truncate(0.1 to 1k, 0, 1M) 
+// ^ much easier to buy large animal qalys than human qalys :^)
+small_animal_advantage = truncate(100 to 10k, 0, 1M) 
+// ^ way easier to buy large animal qalys than human qalys :^)
+
+value_of_wai_for_large_animals = funding_moved * share_of_funding_to_large_animals * large_animal_advantage
+value_of_wai_for_small_animals = funding_moved * share_of_funding_to_small_animals * small_animal_advantage
+// ^ note that the unit for these *is* animal qalys
+// funding * human qaly cost effectiveness of AMF * how much easier it is to buy animal over human qalys
+// :^)
+
+item_wai = {
+  name: "Value of Wild Animal Initiative's work in 2023",
+  description: "Something like, ~expected value of the Wild Animal Inititative's Work so far? This estimation is a bit under-defined.",
+  value: {
+      nuno_qalys: 0,
+      human_qalys: 0,
+      large_animal_qalys: value_of_wai_for_large_animals,
+      small_animal_qalys: value_of_wai_for_small_animals
+  }
+}
+
+/* Beyond Meat */
+
+/* Sources 
+- https://apnews.com/article/mcdonalds-corp-europe-business-a5b9d53c77f6df945fd2ecb9a18ca1a1
+  - "On Thursday, Walmart was advertising Beyond Meat burgers at $9.68 per pound; lean ground beef was $5.86 per pound."
+  - Beyond Meat said it expects net revenue in the range of $375 million to $415 million this year, which would be lower than the $418 million in reported in 2022. 
+- https://faunafacts.com/cows/how-many-burgers-in-one-cow/
+*/
+
+beyond_meat_price_per_pound = 5 to 12
+beyond_meat_revenues = 375M to 415M
+beyond_meat_pounds_sold = revenues / avg_price_per_pound
+
+quarter_pounders_per_cow = 1000 to 1600
+pounds_of_meat_per_cow = quarter_pounders_per_cow / 4
+cows_saved_if_all_meat_was_counterfactual = pounds_sold / pounds_per_cow
+
+chance_purchase_was_counterfactual = beta(4.054018273265266, 25.75259685760455)
+// ^ confidence interval is 0.05 to 0.25, from <https://nunosempere.com/blog/2023/03/15/fit-beta/>
+// I imagine that most people would have chosen a vegetarian alternative
+// but also that having tasty meat replacements makes it easier to
+// keep being a vegetarian.
+// Very uncertain, though
+lifespan_beef_cow = (30 to 42) / 12
+
+value_of_beyond_meat_in_large_animal_qalys =  cows_saved_if_all_meat_was_counterfactual * chance_purchase_was_counterfactual * lifespan_beef_cow
+
+item_beyond_meat = {
+  name: "Value of Beyond Meat, in terms of expected farmed cow lives averted in 2023",
+  description: "Value of Beyond Meat, in terms of expected farmed cow lives averted in 2023. For simplicity, ignores consumer surplus, industry mimesis effects, etc.",
+  value: {
+      nuno_qalys: 0,
+      human_qalys: 0,
+      large_animal_qalys: value_of_beyond_meat_in_large_animal_qalys,
+      small_animal_qalys: 0
+  }
+}
