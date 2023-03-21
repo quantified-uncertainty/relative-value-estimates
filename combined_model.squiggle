@@ -7,6 +7,9 @@ to either side.
 
 */
 
+// Utils
+d_0 = mixture(0)
+
 // # GENERAL FACTORS
 
 moral_circle = {
@@ -58,9 +61,9 @@ item_fwi = {
   name: "Fish Welfare Initiative's value so far",
   description: "Value of the Fish Welfare Initiative's work so far as outlined in <https://www.fishwelfareinitiative.org/impact> as of 21/03/2023 (<https://web.archive.org/web/20230315011504/https://www.fishwelfareinitiative.org/impact>). The reasoning for not disaggregating by year is that their impact page (<https://www.fishwelfareinitiative.org/impact>) doesn't.",
   value: {
-      quri_research: 0,
-      human_qalys: 0,
-      large_animal_qalys: 0,
+      quri_research: d_0,
+      human_qalys: d_0,
+      large_animal_qalys: d_0,
       small_animal_qalys: num_small_animal_qalys_fwi
   }
 }
@@ -112,8 +115,8 @@ item_wai = {
   name: "Value of Wild Animal Initiative's work in 2023",
   description: "Something like, ~expected value of the Wild Animal Inititative's Work so far? This estimation is a bit under-defined.",
   value: {
-      quri_research: 0,
-      human_qalys: 0,
+      quri_research: d_0,
+      human_qalys: d_0,
       large_animal_qalys: value_of_wai_for_large_animals,
       small_animal_qalys: value_of_wai_for_small_animals
   }
@@ -153,10 +156,10 @@ item_beyond_meat = {
   name: "Value of Beyond Meat, in terms of expected farmed cow lives averted in 2023",
   description: "Value of Beyond Meat, in terms of expected farmed cow lives averted in 2023. For simplicity, ignores consumer surplus, industry mimesis effects, etc.",
   value: {
-      quri_research: 0,
-      human_qalys: 0,
+      quri_research: d_0,
+      human_qalys: d_0,
       large_animal_qalys: value_of_beyond_meat_in_large_animal_qalys,
-      small_animal_qalys: 0
+      small_animal_qalys: d_0
   }
 }
 
@@ -186,10 +189,10 @@ item_against_malaria_foundation = {
   name: "Value of the Against Malaria Foundation, in 2021",
   description: "Value of the Against Malaria Foundation, in 2021. For simplification purposes, I am choosing to interpret GiveWell's 'units of value' as QALYs, even though this isn't quite the case.",
   value: {
-      quri_research: 0,
+      quri_research: d_0,
       human_qalys: value_amf_2021,
-      large_animal_qalys: 0,
-      small_animal_qalys: 0
+      large_animal_qalys: d_0,
+      small_animal_qalys: d_0
   }
 }
 
@@ -232,10 +235,10 @@ item_no_asteroids = {
   name: "Value of avoiding medium-sized asteroid impacts for a year",
   description: "Cribbing from this great post: https://forum.effectivealtruism.org/posts/mL2t47FzGqcsPXv6i/shallow-report-on-asteroids.",
   value: {
-      quri_research: 0,
+      quri_research: d_0,
       human_qalys: value_no_large_asteroids_year,
-      large_animal_qalys: 0, // actually it would also kill large numbers of animals, but ignoring that.
-      small_animal_qalys: 0
+      large_animal_qalys: d_0, // actually it would also kill large numbers of animals, but ignoring that.
+      small_animal_qalys: d_0
   }
 }
 
@@ -286,9 +289,9 @@ item_marginal_quri_ops = {
   description: "Value of a marginal hour of operations at QURI, in terms of keeping QURI running (so ignoring value of making activities/hiring/visas/... for now). Units are: median hour of QURI research",
   value: {
       quri_research: value_ops_quri,
-      human_qalys: 0, // note that hopefully it eventually does contribute to human QALYs, it's just that these aren't estimated directly
-      large_animal_qalys: 0, 
-      small_animal_qalys: 0
+      human_qalys: d_0, // note that hopefully it eventually does contribute to human QALYs, it's just that these aren't estimated directly
+      large_animal_qalys: d_0, 
+      small_animal_qalys: d_0
   }
 }
 
@@ -304,9 +307,9 @@ item_freeform_research_quri = {
   description: "Value of a marginal hour of undirected research at QURI. Subjective estimate, with reference to the median hour of research at QURI",
   value: {
       quri_research: value_freeform_research_quri,
-      human_qalys: 0, // note that hopefully it eventually does contribute to human QALYs, it's just that these aren't estimated directly
-      large_animal_qalys: 0, 
-      small_animal_qalys: 0
+      human_qalys: d_0, // note that hopefully it eventually does contribute to human QALYs, it's just that these aren't estimated directly
+      large_animal_qalys: d_0, 
+      small_animal_qalys: d_0
   }
 }
 
@@ -322,9 +325,9 @@ item_research_management_quri = {
   description: "Value of a typical hour of research management at QURI, e.g., a weekly meeting. Subjective estimate, with reference to the median hour of research at QURI",
   value: {
       quri_research: value_research_management_quri,
-      human_qalys: 0,
-      large_animal_qalys: 0, 
-      small_animal_qalys: 0
+      human_qalys: d_0,
+      large_animal_qalys: d_0, 
+      small_animal_qalys: d_0
   }
 }
 
@@ -338,9 +341,9 @@ item_quri_programming = {
   description: "Value of a typical hour of programming time at QURI, e.g., creating a new tool, improving or mantaining Squiggle/Metaforecast/Guesstimate",
   value: {
       quri_research: value_quri_programming_quri,
-      human_qalys: 0,
-      large_animal_qalys: 0, 
-      small_animal_qalys: 0
+      human_qalys: d_0,
+      large_animal_qalys: d_0, 
+      small_animal_qalys: d_0
   }
 }
 
@@ -351,7 +354,7 @@ value_median_quri_research_hour = 1 // baseline unit
 // and I produce fairly valuable stuff
 
 value_median_quri_research = 0.5 to 5
-item_managing_researcher = {
+item_median_quri_research = {
   cluster: "3",
   id: "3.3",
   short_name: "1h Programming @ QURI",
@@ -359,9 +362,9 @@ item_managing_researcher = {
   description: "Value of a typical hour of programming time at QURI, e.g., creating a new tool, improving or mantaining Squiggle/Metaforecast/Guesstimate",
   value: {
       quri_research: value_median_quri_research,
-      human_qalys: 0,
-      large_animal_qalys: 0, 
-      small_animal_qalys: 0
+      human_qalys: d_0,
+      large_animal_qalys: d_0, 
+      small_animal_qalys: d_0
   }
 }
 
@@ -449,12 +452,12 @@ getCommonUnit = {|levels_i|
   
   common_unit_is_large_animals = !(common_unit_is_human_qalys) && 
     !(common_unit_is_quri_research) &&
-    (levels[2] == true)
+    (levels_i[2] == true)
   
   common_unit_is_small_animals = !(common_unit_is_human_qalys) && 
     !(common_unit_is_quri_research) && 
     !(common_unit_is_large_animals) &&
-    (levels[3] == true)
+    (levels_i[3] == true)
   
   no_common_unit = !common_unit_is_large_animals
   
@@ -468,24 +471,17 @@ getCommonUnit = {|levels_i|
   1
 }
 
+isZero = {|x| // a hack, for now
+  result = mean(mixture(x)) == 0
+  result 
+}
+
 getRelativeValues = { |intervention_1, intervention_2|
   values_1 = intervention_1.value
   values_2 = intervention_2.value
-  
-  levels_1 = [
-    values_1.human_qalys != 0,
-    values_1.quri_research != 0,
-    values_1.large_animal_qalys != 0,
-    values_1.small_animal_qalys != 0  
-  ]
+  levels_1 = [ isZero(values_1.human_qalys), isZero(values_1.quri_research), isZero(values_1.large_animal_qalys), isZero(values_1.small_animal_qalys) ]
 
-
-  levels_2 = [
-    values_2.human_qalys != 0,
-    values_2.quri_research != 0,
-    values_2.large_animal_qalys != 0,
-    values_2.small_animal_qalys != 0  
-  ]
+  levels_2 = [ isZero(values_2.human_qalys), isZero(values_2.quri_research), isZero(values_2.large_animal_qalys), isZero(values_2.small_animal_qalys)]
 
   levels_common = [
     levels_1[0] || levels_2[0],
@@ -494,7 +490,7 @@ getRelativeValues = { |intervention_1, intervention_2|
     levels_1[3] || levels_2[3]
   ]
 
-  common_level = getCommonUnit(levels_common)
+  common_unit = getCommonUnit(levels_common)
 
   if common_unit == 1 then { // human qalys
 
@@ -509,7 +505,7 @@ getRelativeValues = { |intervention_1, intervention_2|
       values_2.small_animal_qalys *  small_animal_to_large_animal * large_animal_to_human 
     
     relative_value_point_estimate = mean(human_value_1)/mean(human_value_2)
-    relative_value_range = to(relative_value_point_estimate*10, relative_value_point_estimate/10)
+    relative_value_range = to(relative_value_point_estimate/10, relative_value_point_estimate*10)
     relative_value_range
 
   } else {
@@ -518,7 +514,7 @@ getRelativeValues = { |intervention_1, intervention_2|
       quri_research_value_1 = values_1.quri_research 
       quri_research_value_2 = values_2.quri_research
       relative_value_point_estimate = mean(quri_research_value_1)/mean(quri_research_value_1)
-      relative_value_range = to(relative_value_point_estimate*10, relative_value_point_estimate/10)
+      relative_value_range = to(relative_value_point_estimate/10, relative_value_point_estimate*10)
       relative_value_range
 
     } else {
@@ -533,7 +529,7 @@ getRelativeValues = { |intervention_1, intervention_2|
             values_2.small_animal_qalys *  small_animal_to_large_animal 
           
           relative_value_point_estimate = mean(large_animal_value_1)/mean(large_animal_value_2)
-          relative_value_range = to(relative_value_point_estimate*10, relative_value_point_estimate/10)
+          relative_value_range = to(relative_value_point_estimate/10, relative_value_point_estimate*10)
           relative_value_range
 
       } else {
@@ -541,7 +537,7 @@ getRelativeValues = { |intervention_1, intervention_2|
           small_animal_value_1 = values_1.small_animal_qalys
           small_animal_value_2 = values_2.small_animal_qalys
           relative_value_point_estimate = mean(small_animal_value_1)/mean(small_animal_value_2)
-          relative_value_range = to(relative_value_point_estimate*10, relative_value_point_estimate/10)
+          relative_value_range = to(relative_value_point_estimate/10, relative_value_point_estimate*10)
           relative_value_range
           
         } else {
@@ -550,4 +546,30 @@ getRelativeValues = { |intervention_1, intervention_2|
       })
     } )
   }
+  
+}
+
+ /* Final presentation */
+
+ items = [
+  item_fwi, item_wai, item_beyond_meat, 
+  item_against_malaria_foundation, item_no_asteroids,
+  item_marginal_quri_ops, item_freeform_research_quri, item_research_management_quri, item_quri_programming, item_median_quri_research
+ ]
+
+// List.map(items, {|x| x.name})
+
+/*
+
+
+
+*/
+
+ item_A = items[4]
+ item_B = items[8]
+
+{
+  item_A: item_A,
+  item_B: item_B,
+  relativeValue: getRelativeValues(item_A, item_B)
 }
