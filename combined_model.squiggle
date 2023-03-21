@@ -10,7 +10,7 @@ to either side.
 // # GENERAL FACTORS
 
 moral_circle = {
-  egoism: 3, // nuno qalys 
+  speculative_longtermism: 6, // quri research hours?
   human_centric_consequentialism: 6, // generic human qalys
   large_animal_inclusive_consequentialism: 1, // cow / pig qalys
   small_animal_inclusive_consequentialism: 0.2 // fish qalys
@@ -30,7 +30,7 @@ value_of_small_animal_qalys_relative_to_human_qalys_under_small_animal_inclusive
 
 // ## Cluster 1: Animal charities
 
-// Intervention 1: Fish Welfare Initiative's work so far
+// Intervention 1.1: Fish Welfare Initiative's work so far
 /* Sources
 - https://www.fishwelfareinitiative.org/impact
 - https://forum.effectivealtruism.org/posts/T5fSphiK6sQ6hyptX/opinion-estimating-invertebrate-sentience#Peter_Hurford
@@ -52,17 +52,20 @@ proportion_qaly_improvement = beta(1.9894047192566546, 6.370718188981973)
 num_small_animal_qalys_fwi = timespan_fish_helped * (number_of_fish_potentially_helped_by_fwi  + number_of_shrimp_potentially_helped_by_fwi) * proportion_qaly_improvement
 
 item_fwi = {
-  name: "Fish Welfare Initiative",
+  cluster: "1",
+  id: "1.1",
+  short_name: "FWI value so far",
+  name: "Fish Welfare Initiative's value so far",
   description: "Value of the Fish Welfare Initiative's work so far as outlined in <https://www.fishwelfareinitiative.org/impact> as of 21/03/2023 (<https://web.archive.org/web/20230315011504/https://www.fishwelfareinitiative.org/impact>). The reasoning for not disaggregating by year is that their impact page (<https://www.fishwelfareinitiative.org/impact>) doesn't.",
   value: {
-      nuno_qalys: 0,
+      quri_research: 0,
       human_qalys: 0,
       large_animal_qalys: 0,
       small_animal_qalys: num_small_animal_qalys_fwi
   }
 }
 
-// Intervention 2: Wild Animal Initiative 
+// Intervention 1.2: Wild Animal Initiative 
 
 /* Estimation strategy:
 - For now, I am choosing to model its impact as a chance that it influences further donations. Key parameters will be: how much funding has it influenced so far, what the value of that funding it.
@@ -91,8 +94,6 @@ share_of_funding_to_small_animals = 1 - share_of_funding_to_large_animals
 // https://www.squiggle-language.com/playground
 // :^)
 
-amf_baseline_cost_effectiveness_per_dollar = truncate(0.011 to 0.0821, 0, 1)
-
 large_animal_advantage = truncate(0.1 to 1k, 0, 1M) 
 // ^ much easier to buy large animal qalys than human qalys :^)
 small_animal_advantage = truncate(100 to 10k, 0, 1M) 
@@ -105,17 +106,20 @@ value_of_wai_for_small_animals = funding_moved * share_of_funding_to_small_anima
 // :^)
 
 item_wai = {
+  cluster: "1",
+  id: "1.2",
+    short_name: "WAI 2023",
   name: "Value of Wild Animal Initiative's work in 2023",
   description: "Something like, ~expected value of the Wild Animal Inititative's Work so far? This estimation is a bit under-defined.",
   value: {
-      nuno_qalys: 0,
+      quri_research: 0,
       human_qalys: 0,
       large_animal_qalys: value_of_wai_for_large_animals,
       small_animal_qalys: value_of_wai_for_small_animals
   }
 }
 
-/* Beyond Meat */
+// Intervention 1.3: Beyond Meat
 
 /* Sources 
 - https://apnews.com/article/mcdonalds-corp-europe-business-a5b9d53c77f6df945fd2ecb9a18ca1a1
@@ -143,12 +147,282 @@ lifespan_beef_cow = (30 to 42) / 12
 value_of_beyond_meat_in_large_animal_qalys =  cows_saved_if_all_meat_was_counterfactual * chance_purchase_was_counterfactual * lifespan_beef_cow
 
 item_beyond_meat = {
+  cluster: "1",
+  id: "1.3",
+  short_name: "Beyond Meat 2023",
   name: "Value of Beyond Meat, in terms of expected farmed cow lives averted in 2023",
   description: "Value of Beyond Meat, in terms of expected farmed cow lives averted in 2023. For simplicity, ignores consumer surplus, industry mimesis effects, etc.",
   value: {
-      nuno_qalys: 0,
+      quri_research: 0,
       human_qalys: 0,
       large_animal_qalys: value_of_beyond_meat_in_large_animal_qalys,
       small_animal_qalys: 0
   }
 }
+
+/* ## Cluster 2: Diverse interventions of different types */
+
+// Intervention 2.1: Against Malaria Foundations
+ cost_effectiveness_per_dollar_Tanae = 0.011 to 0.0821 
+ // ^source:  <https://observablehq.com/d/43b277c2743896a6> (<https://observablehq.com/@tanaerao/malaria-nets-analysis>)
+ // units here are, very roughly, similar to qalys
+ cost_effectiveness_per_dollar_with_counterfactual_adjustment = mixture(
+  [
+    0, 
+    cost_effectiveness_per_dollar_Tanae,
+    -cost_effectiveness_per_dollar_Tanae
+  ],
+  [0.1, 0.8, 0.1]
+ )
+budget_amf_2021 = 92M
+// ^ From its Form 990 
+// (<https://www.causeiq.com/organizations/view_990/203069841/18a54235eb7569bea4f7440340e1f3bf>)
+value_amf_2021 = cost_effectiveness_per_dollar_with_counterfactual_adjustment * budget_amf_2021
+
+item_against_malaria_foundation = {
+  cluster: "2",
+  id: "2.1",
+  short_name: "AMF 2021",
+  name: "Value of the Against Malaria Foundation, in 2021",
+  description: "Value of the Against Malaria Foundation, in 2021. For simplification purposes, I am choosing to interpret GiveWell's 'units of value' as QALYs, even though this isn't quite the case.",
+  value: {
+      quri_research: 0,
+      human_qalys: value_amf_2021,
+      large_animal_qalys: 0,
+      small_animal_qalys: 0
+  }
+}
+
+// Intervention 2.2: Value of avoiding at least medium-sized asteroid impacts for a year 
+/*
+Sources: 
+- https://forum.effectivealtruism.org/posts/mL2t47FzGqcsPXv6i/shallow-report-on-asteroids
+- For the population pyramid: <https://ourworldindata.org/global-population-pyramid>
+*/
+
+tunguska_like_asteroid_event_loss =  1.94 * 10e7 // DALYs.
+tunguska_yearly_probability = 0.5/100
+
+large_sub_global_asteroid_event_loss = 2.76 * 10e8 
+large_probability = 0.004/100
+
+global_asteroid_event_loss =  4.55 * 10e11 
+global_probability = 0.0002/100
+
+rare_k_t_scale_asteroid_event_loss = 8.42 * 10e11 
+rare_probability= 0.000001/100
+
+p_no_large_asteroids = 1 - (tunguska_yearly_probability + large_probability + global_probability + rare_probability)
+
+qaly_loss_per_death = truncate(5 to 60, 0, 120)
+// fitting a population pyramid to a lognormal. 
+// very unprincipled :( 
+// This also comes up in some estimates of AMF, 
+// where they don't disaggregate under 5 years olds by age 
+
+value_no_large_asteroids_year = mixture(
+  [tunguska_like_asteroid_event_loss, large_sub_global_asteroid_event_loss, global_asteroid_event_loss, rare_k_t_scale_asteroid_event_loss, 0],
+  [tunguska_yearly_probability, large_probability, global_probability, rare_probability, p_no_large_asteroids]
+) * qaly_loss_per_death
+
+item_no_asteroids = {
+  cluster: "2",
+  id: "2.2",
+  short_name: "No big asteroids 2023",
+  name: "Value of avoiding medium-sized asteroid impacts for a year",
+  description: "Cribbing from this great post: https://forum.effectivealtruism.org/posts/mL2t47FzGqcsPXv6i/shallow-report-on-asteroids.",
+  value: {
+      quri_research: 0,
+      human_qalys: value_no_large_asteroids_year,
+      large_animal_qalys: 0, // actually it would also kill large numbers of animals, but ignoring that.
+      small_animal_qalys: 0
+  }
+}
+
+/* Cluster 3: Various research outputs at QURI */
+
+/*
+Value of various activities Ozzie can be doing
+
+The way to model this might be:
+- QURI is a black box which produces research outputs
+- Ops are necessary to keep the black box running, but it's unclear how many hours.
+
+Things to compare:
+
+- Value of 1h of marginal ops (Nics/Maria, but saying "ops" so that it is readable by people without much context)
+- Value of 1h of Ozzie's freeform research and theorizing
+- Value of 1h of Nuño's time researching
+- Value of 1h of Slava's time programming
+- [ Not done ] 1h of Ozzie managing Slava
+- 1h of Ozzie managing Nuño's research
+
+Ignoring:
+- FB
+- RP board member
+Because the comparison wouldn't be as neat
+
+*/
+
+/* Managing operations 
+The way I am choosing to model this is that there is a number of hours of necessary operations, without which QURI breaks,
+and hours beyond that are not necessary.
+
+This is very simplistic, because it doesn't take into account how ops can do things other than make QURI not break,
+e.g., organize contests, help Slava get a visa, make research go faster, etc.
+*/
+
+// Item 3.1: A marginal hour of ops research
+
+p_marginal_ops_hour_is_necessary = 0.3 // uninformed guess
+unlocked_hours_if_necessary = 1 to 10
+value_ops_quri = mixture([0, unlocked_hours_if_necessary], [1-p_marginal_ops_hour_is_necessary, p_marginal_ops_hour_is_necessary]) 
+
+item_marginal_quri_ops = {
+  cluster: "3",
+  id: "3.1",
+  short_name: "Marginal ops hour @ QURI",
+  name: "Value of a marginal QURI ops hour",
+  description: "Value of a marginal hour of operations at QURI, in terms of keeping QURI running (so ignoring value of making activities/hiring/visas/... for now). Units are: median hour of QURI research",
+  value: {
+      quri_research: value_ops_quri,
+      human_qalys: 0, // note that hopefully it eventually does contribute to human QALYs, it's just that these aren't estimated directly
+      large_animal_qalys: 0, 
+      small_animal_qalys: 0
+  }
+}
+
+/* Freeform research */
+value_freeform_research_quri = mixture([0, 0.5 to 20], [0.2, 0.8])
+// compared to an "average" hour of QURI's research
+// source: vibes
+item_freeform_research_quri = {
+  cluster: "3",
+  id: "3.2",
+  short_name: "1h Freeform Research @ QURI",
+  name: "Value of a marginal hour of undirected research at QURI",
+  description: "Value of a marginal hour of undirected research at QURI. Subjective estimate, with reference to the median hour of research at QURI",
+  value: {
+      quri_research: value_freeform_research_quri,
+      human_qalys: 0, // note that hopefully it eventually does contribute to human QALYs, it's just that these aren't estimated directly
+      large_animal_qalys: 0, 
+      small_animal_qalys: 0
+  }
+}
+
+/* Managing Nuño's research */
+value_research_management_quri = mixture([0, 1 to 10], [0.4, 0.6])
+// sometimes these are basically useless, 
+// but sometimes they are very useful
+item_research_management_quri = {
+  cluster: "3",
+  id: "3.3",
+  short_name: "1h Research Management @ QURI",
+  name: "Value of an hour of doing research management QURI",
+  description: "Value of a typical hour of research management at QURI, e.g., a weekly meeting. Subjective estimate, with reference to the median hour of research at QURI",
+  value: {
+      quri_research: value_research_management_quri,
+      human_qalys: 0,
+      large_animal_qalys: 0, 
+      small_animal_qalys: 0
+  }
+}
+
+/* Value of 1h of Slava's time programming */
+value_quri_programming_quri = 0.5 to 5
+item_quri_programming = {
+  cluster: "3",
+  id: "3.3",
+  short_name: "1h Programming @ QURI",
+  name: "Value of an hour of programming at QURI",
+  description: "Value of a typical hour of programming time at QURI, e.g., creating a new tool, improving or mantaining Squiggle/Metaforecast/Guesstimate",
+  value: {
+      quri_research: value_quri_programming_quri,
+      human_qalys: 0,
+      large_animal_qalys: 0, 
+      small_animal_qalys: 0
+  }
+}
+
+/* Value of the median 1h of my (Nuño's) time researching */
+value_median_quri_research_hour = 1 // baseline unit
+// note that I think that the value of the median hour of my time is much worse
+// than the expected value of a research hour, since sometimes I am inspired
+// and I produce fairly valuable stuff
+
+value_median_quri_research = 0.5 to 5
+item_managing_researcher = {
+  cluster: "3",
+  id: "3.3",
+  short_name: "1h Programming @ QURI",
+  name: "Value of an hour of programming at QURI",
+  description: "Value of a typical hour of programming time at QURI, e.g., creating a new tool, improving or mantaining Squiggle/Metaforecast/Guesstimate",
+  value: {
+      quri_research: value_median_quri_research,
+      human_qalys: 0,
+      large_animal_qalys: 0, 
+      small_animal_qalys: 0
+  }
+}
+
+// # Conversion factors
+
+/*
+
+- Small animal qaly → large animal qaly
+- Large animal qaly → Human qaly
+- QURI research <-> human qaly: This one is tricky
+
+*/
+
+small_animal_to_large_animal = beta(1.1049756286343138, 14.271888425116993)
+// fitting a beta to have a 90% confidence interval of 0.005 to 0.2
+// essentially very arbitrary, based on subjective estimates
+large_animal_to_human = beta(1.9894047192566546, 6.370718188981973)
+// fitting a beta to have a 90% confidence interval of 0.05 to 0.5
+
+/* QURI research in terms of human QALYs: man this is tricky
+
+One way to think about QURI's impact is that our research on estimation will improve 
+the prioritization of the EA community.
+
+This can be decomposed into:
+
+- Capital prioritization: E.g., influencing EA Funds, Open Philanthropy, etc. to 
+  give out their capital better
+- Labour prioritization: Influencing individual EAs to make decisions different.
+
+The problem with this is that our influence right now seems a bit small. Most of 
+our possible value is future expected value.
+
+*/
+
+capital_who_will_listen_to_us = mixture([0, truncate(1M to 10M, 0, 100M), truncate(5M to 500M, 0, 20B)], [0.3, 0.5, 0.2])
+improvement_over_that_capital = beta(1.04786893882528, 60.175072401582355)
+// ^ 0.1% to 5%
+// I do think that you can get improvements of 5% essentially
+// by dropping the worldview diversification approach
+// though I think it's very unlikely that I could 
+// convince Open Philanthropy of that.
+
+global_health_advantage = 1 // nothing, AMF is the baseline
+longtermism_advantage = truncate(10k to 100k, 0, 100M) 
+initial_value_of_capital = amf_baseline_cost_effectiveness_per_dollar * mixture(
+  [global_health_advantage, (large_animal_advantage + small_animal_advantage)/2, longtermism_advantage], 
+  [ 1, 1, 1]
+)
+value_quri_as_influence_on_capital = capital_who_will_listen_to_us * 
+  improvement_over_that_capital * 
+  initial_value_of_capital
+
+number_of_people_who_will_meaningfully_make_different_decisions = mixture([0, truncate(1 to 100, 0, 1k), truncate(50 to 1k, 0, 20k)], [0.1, 0.7, 0.2])
+monetary_value_of_decision_improvement = mixture([0, truncate(1k to 10k, 0, 100k), truncate(100k to 100M, 0, 1B)], [0.5, 0.4, 0.1])
+value_of_quri_from_decision_improvements = monetary_value_of_decision_improvement * mixture(
+  [global_health_advantage, (large_animal_advantage + small_animal_advantage)/2, longtermism_advantage], 
+  [ 1, 1, 1]
+)
+
+value_of_quri = value_quri_as_influence_on_capital + value_of_quri_from_decision_improvements
+// most of this is going to come from the "longtermism advantage" part
+
+// but this is over a period of, say, three years
