@@ -130,11 +130,11 @@ item_wai = {
 
 beyond_meat_price_per_pound = 5 to 12
 beyond_meat_revenues = 375M to 415M
-beyond_meat_pounds_sold = revenues / avg_price_per_pound
+beyond_meat_pounds_sold = beyond_meat_revenues / beyond_meat_price_per_pound
 
 quarter_pounders_per_cow = 1000 to 1600
 pounds_of_meat_per_cow = quarter_pounders_per_cow / 4
-cows_saved_if_all_meat_was_counterfactual = pounds_sold / pounds_per_cow
+cows_saved_if_all_meat_was_counterfactual = beyond_meat_pounds_sold / pounds_of_meat_per_cow
 
 chance_purchase_was_counterfactual = beta(4.054018273265266, 25.75259685760455)
 // ^ confidence interval is 0.05 to 0.25, from <https://nunosempere.com/blog/2023/03/15/fit-beta/>
@@ -163,14 +163,14 @@ item_beyond_meat = {
 /* ## Cluster 2: Diverse interventions of different types */
 
 // Intervention 2.1: Against Malaria Foundations
- cost_effectiveness_per_dollar_Tanae = 0.011 to 0.0821 
+ amf_baseline_cost_effectiveness_per_dollar = 0.011 to 0.0821 
  // ^source:  <https://observablehq.com/d/43b277c2743896a6> (<https://observablehq.com/@tanaerao/malaria-nets-analysis>)
  // units here are, very roughly, similar to qalys
  cost_effectiveness_per_dollar_with_counterfactual_adjustment = mixture(
   [
     0, 
-    cost_effectiveness_per_dollar_Tanae,
-    -cost_effectiveness_per_dollar_Tanae
+    amf_baseline_cost_effectiveness_per_dollar,
+    -amf_baseline_cost_effectiveness_per_dollar
   ],
   [0.1, 0.8, 0.1]
  )
@@ -423,6 +423,78 @@ value_of_quri_from_decision_improvements = monetary_value_of_decision_improvemen
 )
 
 value_of_quri = value_quri_as_influence_on_capital + value_of_quri_from_decision_improvements
-// most of this is going to come from the "longtermism advantage" part
+// most of this is going to come from the "longtermism advantage" part.
+// it's also going to contain animal-qalys,
+// but say that this is mostly human-qaly-equivalents
+value_of_quri_in_human_qalys = value_of_quri
 
-// but this is over a period of, say, three years
+// but this is over a period of, say, three years, and we want the value
+// of a median hour.
+num_employees = 3 to 6
+hours_in_three_years =  (num_employees * 3 * 50 * 50) 
+// ^ 3 years, 50 weeks a year, 50 hours employee/week
+value_per_quri_hour_in_qalys = value_of_quri_in_human_qalys / hours_in_three_years
+
+// value_per_quri_hour_in_qalys
+
+/* Comparison function */
+getCommonUnit = {|levels_i| 
+  common_unit_is_human_qalys = 
+    (levels_i[0] == true) ||
+    (levels_i[1] == true && levels_i[2] == true) ||
+    (levels_i[1] == true && levels_i[3] == true) 
+  
+  common_unit_is_quri_research = !(common_unit_is_human_qalys) &&
+    (levels_i[1] == true )
+  
+  common_unit_is_large_animals = !(common_unit_is_human_qalys) && 
+    !(common_unit_is_quri_research) &&
+    (levels[2] == true)
+  
+  common_unit_is_small_animals = !(common_unit_is_human_qalys) && 
+    !(common_unit_is_quri_research) && 
+    !(common_unit_is_large_animals) &&
+    (levels[3] == true)
+  
+  no_common_unit = !common_unit_is_large_animals
+  
+  result = common_unit_is_human_qalys ? 1 : 
+    (common_unit_is_quri_research ? 2 : (
+      common_unit_is_large_animals ? 3 : (
+        common_unit_is_small_animals ? 4 : 5
+      )
+    )
+    )
+  1
+}
+
+
+getRelativeValues = { |intervention_1, intervention_2|
+  values_1 = intervention_1.value
+  values_2 = intervention_2.value
+  
+  levels_1 = [
+    values_1.human_qalys != 0,
+    values_1.quri_research != 0,
+    values_1.large_animal_qalys != 0,
+    values_1.small_animal_qalys != 0  
+  ]
+
+
+  levels_2 = [
+    values_2.human_qalys != 0,
+    values_2.quri_research != 0,
+    values_2.large_animal_qalys != 0,
+    values_2.small_animal_qalys != 0  
+  ]
+
+  levels_common = 1
+  // Get common level
+  /*
+  widest_level_1 = (values_1.quri_research != 0) ? 1 : (values_1.human_qalys != 0 ? 2 : ( values_1.large_animal_qalys != 0 ? 3 : 4))
+  widest_level_2 = (values_2.quri_research != 0) ? 1 : (values_2.human_qalys != 0 ? 2 : ( values_2.large_animal_qalys != 0 ? 3 : 4))
+  widest_level = max([widest_level_1, widest_level_2])
+  */
+  1
+  
+}
