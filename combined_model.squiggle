@@ -468,7 +468,6 @@ getCommonUnit = {|levels_i|
   1
 }
 
-
 getRelativeValues = { |intervention_1, intervention_2|
   values_1 = intervention_1.value
   values_2 = intervention_2.value
@@ -488,13 +487,67 @@ getRelativeValues = { |intervention_1, intervention_2|
     values_2.small_animal_qalys != 0  
   ]
 
-  levels_common = 1
-  // Get common level
-  /*
-  widest_level_1 = (values_1.quri_research != 0) ? 1 : (values_1.human_qalys != 0 ? 2 : ( values_1.large_animal_qalys != 0 ? 3 : 4))
-  widest_level_2 = (values_2.quri_research != 0) ? 1 : (values_2.human_qalys != 0 ? 2 : ( values_2.large_animal_qalys != 0 ? 3 : 4))
-  widest_level = max([widest_level_1, widest_level_2])
-  */
-  1
-  
+  levels_common = [
+    levels_1[0] || levels_2[0],
+    levels_1[1] || levels_2[1],
+    levels_1[2] || levels_2[2],
+    levels_1[3] || levels_2[3]
+  ]
+
+  common_level = getCommonUnit(levels_common)
+
+  if common_unit == 1 then { // human qalys
+
+    human_value_1 = values_1.human_qalys * 1 + 
+      values_1.quri_research * value_per_quri_hour_in_qalys +
+      values_1.large_animal_qalys * large_animal_to_human +
+      values_1.small_animal_qalys *  small_animal_to_large_animal * large_animal_to_human 
+    
+    human_value_2 = values_2.human_qalys * 1 + 
+      values_2.quri_research * value_per_quri_hour_in_qalys +
+      values_2.large_animal_qalys * large_animal_to_human +
+      values_2.small_animal_qalys *  small_animal_to_large_animal * large_animal_to_human 
+    
+    relative_value_point_estimate = mean(human_value_1)/mean(human_value_2)
+    relative_value_range = to(relative_value_point_estimate*10, relative_value_point_estimate/10)
+    relative_value_range
+
+  } else {
+    (if common_unit == 2 then { // quri research
+
+      quri_research_value_1 = values_1.quri_research 
+      quri_research_value_2 = values_2.quri_research
+      relative_value_point_estimate = mean(quri_research_value_1)/mean(quri_research_value_1)
+      relative_value_range = to(relative_value_point_estimate*10, relative_value_point_estimate/10)
+      relative_value_range
+
+    } else {
+      (if common_unit == 3 then { // large animal
+
+          large_animal_value_1 = 
+            values_1.large_animal_qalys * large_animal_to_large_animal +
+            values_1.small_animal_qalys *  small_animal_to_large_animal 
+          
+          large_animal_value_2 = 
+            values_2.large_animal_qalys * large_animal_to_large_animal +
+            values_2.small_animal_qalys *  small_animal_to_large_animal 
+          
+          relative_value_point_estimate = mean(large_animal_value_1)/mean(large_animal_value_2)
+          relative_value_range = to(relative_value_point_estimate*10, relative_value_point_estimate/10)
+          relative_value_range
+
+      } else {
+        if common_unit == 4 then {
+          small_animal_value_1 = values_1.small_animal_qalys
+          small_animal_value_2 = values_2.small_animal_qalys
+          relative_value_point_estimate = mean(small_animal_value_1)/mean(small_animal_value_2)
+          relative_value_range = to(relative_value_point_estimate*10, relative_value_point_estimate/10)
+          relative_value_range
+          
+        } else {
+          - 42 // some value to indicate that things have gone wrong
+        }
+      })
+    } )
+  }
 }
