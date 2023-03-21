@@ -41,6 +41,3 @@ decision_functions_sampled = List.map(value_animals_samples,{|x| decision_sampli
   decision_functions_sampled: decision_functions_sampled
 
 }
-
-
-value
