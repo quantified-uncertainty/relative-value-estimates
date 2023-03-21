@@ -1,27 +1,46 @@
-decision = { |nAnimals|
-  value_of_salmon_in_human_qualys = mixture([0,0,beta(0.9446304863245985, 4.19091210982098)], [1,1,1] )
-  relative_utils =  nAnimals * value_of_animals_in_humans
+
+value_of_salmon_in_human_qualys = mixture([0,0,beta(0.9446304863245985, 4.19091210982098)], [1,1,1] )
+
+decision = { |nSalmon|
+  relative_utils =  nSalmon * value_of_salmon_in_human_qualys
   if mean(relative_utils) > 1 then {
     1
   } else {
     0
   }
+} // decision between n salmon qualys or 1 human qualy
 
-}
+value_salmon_sample = sampleN(value_of_salmon_in_human_qualys , 1)[0]              
+decision_sampling = { |nSalmon|
 
-m = mixture([0,0,beta(0.9446304863245985, 4.19091210982098)], [1,1,1] )
-value_animals = sampleN(m , 1)[0]
-decision_sampling = { |nAnimals|
-
-  value_of_animals_in_humans = value_animals
-  relative_utils =  nAnimals * value_of_animals_in_humans
+  relative_utils =  nSalmon * value_salmon_sample
   if relative_utils > 1 then {
     1
   } else {
     0
   }
+}
+
+decision_sampling_maker(x) = { |nSalmon|
+
+  relative_utils =  nSalmon * x
+  if relative_utils > 1 then {
+    1
+  } else {
+    0
+  }
+}
+
+
+value_animals_samples = sampleN(value_of_salmon_in_human_qualys, 10)
+decision_functions_sampled = List.map(value_animals_samples,{|x| decision_sampling_maker(x)})
+
+{
+  decision: decision,
+  decision_sampling: decision_sampling,
+  decision_functions_sampled: decision_functions_sampled
 
 }
 
-decision_sampling
- 
+
+value
