@@ -480,10 +480,10 @@ getCommonUnit = {|levels_i|
   1
 }
 
-isZero = {|x| // a hack, for now
+isNotZero = {|x| // a hack, for now
   epsilon = 10e-4
   result = abs(mean(mixture(x))) < epsilon
-  result 
+  !result 
 }
 
 getFittedLogNormal = {|dist| 
@@ -505,9 +505,9 @@ getRelativeValues = { |intervention_1, intervention_2|
 
     values_1 = intervention_1.value
     values_2 = intervention_2.value
-    levels_1 = [ isZero(values_1.human_qalys), isZero(values_1.quri_research), isZero(values_1.large_animal_qalys), isZero(values_1.small_animal_qalys) ]
+    levels_1 = [ isNotZero(values_1.human_qalys), isNotZero(values_1.quri_research), isNotZero(values_1.large_animal_qalys), isNotZero(values_1.small_animal_qalys) ]
 
-    levels_2 = [ isZero(values_2.human_qalys), isZero(values_2.quri_research), isZero(values_2.large_animal_qalys), isZero(values_2.small_animal_qalys)]
+    levels_2 = [ isNotZero(values_2.human_qalys), isNotZero(values_2.quri_research), isNotZero(values_2.large_animal_qalys), isNotZero(values_2.small_animal_qalys)]
 
     levels_common = [
       levels_1[0] || levels_2[0],
@@ -515,9 +515,18 @@ getRelativeValues = { |intervention_1, intervention_2|
       levels_1[2] || levels_2[2],
       levels_1[3] || levels_2[3]
     ]
-
     common_unit = getCommonUnit(levels_common)
-    common_unit
+
+    print =     {
+      
+      levels_1: levels_1,
+      levels_2: levels_2,
+      common_unit: common_unit
+    }
+
+
+    if true then print else 
+    
 
     if common_unit == 1 then { // human qalys
 
