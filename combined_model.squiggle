@@ -487,13 +487,15 @@ isNotZero = {|x| // a hack, for now
 }
 
 getFittedLogNormal = {|dist| 
-  lower_cdf = max([inv(dist, 0.05),1])
-  upper_cdf = max([inv(dist, 0.95), lower_cdf + 1])
+  lower_cdf = inv(dist, 0.05)// max([inv(dist, 0.05),1])
+  upper_cdf = inv(dist, 0.95) // max([inv(dist, 0.95), lower_cdf + 1])
 
   result = to(lower_cdf, upper_cdf)
   result
 
 }
+truncateAtZero(dist) = truncateLeft(dist, 0)
+t0 = truncateAtZero
 
 getRelativeValues = { |intervention_1, intervention_2|
 
@@ -515,22 +517,7 @@ getRelativeValues = { |intervention_1, intervention_2|
       levels_1[2] || levels_2[2],
       levels_1[3] || levels_2[3]
     ]
-    common_unit = getCommonUnit(levels_common)
-
-    print =     {
-      
-      levels_1: levels_1,
-      levels_2: levels_2,
-      common_levels: levels_common,
-      common_unit: common_unit,
-      common_human: (levels_common[0] == true) ||
-    (levels_common[1] == true && levels_common[2] == true) ||
-    (levels_common[1] == true && levels_common[3] == true) 
-    }
-
-
-    if false then print else 
-    
+    common_unit = getCommonUnit(levels_common)    
 
     if common_unit == 1 then { // human qalys
 
@@ -558,7 +545,7 @@ getRelativeValues = { |intervention_1, intervention_2|
       fitted_lognormal_1 = getFittedLogNormal(human_value_1)
       fitted_lognormal_2 = getFittedLogNormal(human_value_2)
       relative_value = fitted_lognormal_1 / fitted_lognormal_2
-      relative_value
+      t0(relative_value)
       
 
     } else {
@@ -575,17 +562,17 @@ getRelativeValues = { |intervention_1, intervention_2|
         fitted_lognormal_1 = getFittedLogNormal(quri_research_value_1)
         fitted_lognormal_2 = getFittedLogNormal(quri_research_value_2)
         relative_value = fitted_lognormal_1 / fitted_lognormal_2
-        relative_value
+        t0(relative_value)
 
       } else {
         (if common_unit == 3 then { // large animal
 
             large_animal_value_1 = 
-              values_1.large_animal_qalys * large_animal_to_large_animal +
+              values_1.large_animal_qalys +
               values_1.small_animal_qalys *  small_animal_to_large_animal 
             
             large_animal_value_2 = 
-              values_2.large_animal_qalys * large_animal_to_large_animal +
+              values_2.large_animal_qalys +
               values_2.small_animal_qalys *  small_animal_to_large_animal 
             
             // relative_value_point_estimate = mean(large_animal_value_1)/mean(large_animal_value_2)
@@ -594,7 +581,7 @@ getRelativeValues = { |intervention_1, intervention_2|
             fitted_lognormal_1 = getFittedLogNormal(large_animal_value_1)
             fitted_lognormal_2 = getFittedLogNormal(large_animal_value_2)
             relative_value = fitted_lognormal_1 / fitted_lognormal_2
-            relative_value
+            t0(relative_value)
 
         } else {
           if common_unit == 4 then {
@@ -607,7 +594,7 @@ getRelativeValues = { |intervention_1, intervention_2|
             fitted_lognormal_1 = getFittedLogNormal(small_animal_value_1)
             fitted_lognormal_2 = getFittedLogNormal(small_animal_value_2)
             relative_value = fitted_lognormal_1 / fitted_lognormal_2
-            relative_value
+            t0(relative_value)
             
           } else {
             - 42 // some value to indicate that things have gone wrong 
@@ -629,13 +616,13 @@ getRelativeValues = { |intervention_1, intervention_2|
 
 // List.map(items, {|x| x.name})
 
- item_A = items[8]
- item_B = items[9]
+ item_A = items[3]
+ item_B = items[4]
 
 {
   item_A_name: item_A.name,
   item_B_name: item_B.name,
   relativeValue: getRelativeValues(item_A, item_B),
-  item_A: item_A,
-  item_B: item_B,
+  item_A_value: item_A.value,
+  item_B_value: item_B.value,
 }
