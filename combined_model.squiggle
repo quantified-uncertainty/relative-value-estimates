@@ -57,6 +57,7 @@ num_small_animal_qalys_fwi = timespan_fish_helped * (number_of_fish_potentially_
 item_fwi = {
   cluster: "1",
   id: "1.1",
+  id_num: 1,
   short_name: "FWI value so far",
   name: "Fish Welfare Initiative's value so far",
   description: "Value of the Fish Welfare Initiative's work so far as outlined in <https://www.fishwelfareinitiative.org/impact> as of 21/03/2023 (<https://web.archive.org/web/20230315011504/https://www.fishwelfareinitiative.org/impact>). The reasoning for not disaggregating by year is that their impact page (<https://www.fishwelfareinitiative.org/impact>) doesn't.",
@@ -111,7 +112,8 @@ value_of_wai_for_small_animals = funding_moved * share_of_funding_to_small_anima
 item_wai = {
   cluster: "1",
   id: "1.2",
-    short_name: "WAI 2023",
+  id_num: 2,
+  short_name: "WAI 2023",
   name: "Value of Wild Animal Initiative's work in 2023",
   description: "Something like, ~expected value of the Wild Animal Inititative's Work so far? This estimation is a bit under-defined.",
   value: {
@@ -152,6 +154,7 @@ value_of_beyond_meat_in_large_animal_qalys =  cows_saved_if_all_meat_was_counter
 item_beyond_meat = {
   cluster: "1",
   id: "1.3",
+  id_num: 3,
   short_name: "Beyond Meat 2023",
   name: "Value of Beyond Meat, in terms of expected farmed cow lives averted in 2023",
   description: "Value of Beyond Meat, in terms of expected farmed cow lives averted in 2023. For simplicity, ignores consumer surplus, industry mimesis effects, etc.",
@@ -185,6 +188,7 @@ value_amf_2021 = cost_effectiveness_per_dollar_with_counterfactual_adjustment * 
 item_against_malaria_foundation = {
   cluster: "2",
   id: "2.1",
+  id_num: 4,
   short_name: "AMF 2021",
   name: "Value of the Against Malaria Foundation, in 2021",
   description: "Value of the Against Malaria Foundation, in 2021. For simplification purposes, I am choosing to interpret GiveWell's 'units of value' as QALYs, even though this isn't quite the case.",
@@ -231,6 +235,7 @@ value_no_large_asteroids_year = mixture(
 item_no_asteroids = {
   cluster: "2",
   id: "2.2",
+  id_num: 5,
   short_name: "No big asteroids 2023",
   name: "Value of avoiding medium-sized asteroid impacts for a year",
   description: "Cribbing from this great post: https://forum.effectivealtruism.org/posts/mL2t47FzGqcsPXv6i/shallow-report-on-asteroids.",
@@ -284,6 +289,7 @@ value_ops_quri = mixture([0, unlocked_hours_if_necessary], [1-p_marginal_ops_hou
 item_marginal_quri_ops = {
   cluster: "3",
   id: "3.1",
+  id_num: 6,
   short_name: "Marginal ops hour @ QURI",
   name: "Value of a marginal QURI ops hour",
   description: "Value of a marginal hour of operations at QURI, in terms of keeping QURI running (so ignoring value of making activities/hiring/visas/... for now). Units are: median hour of QURI research",
@@ -302,6 +308,7 @@ value_freeform_research_quri = mixture([0, 0.5 to 20], [0.2, 0.8])
 item_freeform_research_quri = {
   cluster: "3",
   id: "3.2",
+  id_num: 7,
   short_name: "1h Freeform Research @ QURI",
   name: "Value of a marginal hour of undirected research at QURI",
   description: "Value of a marginal hour of undirected research at QURI. Subjective estimate, with reference to the median hour of research at QURI",
@@ -320,6 +327,7 @@ value_research_management_quri = mixture([0, 1 to 10], [0.4, 0.6])
 item_research_management_quri = {
   cluster: "3",
   id: "3.3",
+  id_num: 8,
   short_name: "1h Research Management @ QURI",
   name: "Value of an hour of doing research management QURI",
   description: "Value of a typical hour of research management at QURI, e.g., a weekly meeting. Subjective estimate, with reference to the median hour of research at QURI",
@@ -336,6 +344,7 @@ value_quri_programming_quri = 0.5 to 5
 item_quri_programming = {
   cluster: "3",
   id: "3.3",
+  id_num: 9,
   short_name: "1h Programming @ QURI",
   name: "Value of an hour of programming at QURI",
   description: "Value of a typical hour of programming time at QURI, e.g., creating a new tool, improving or mantaining Squiggle/Metaforecast/Guesstimate",
@@ -357,6 +366,7 @@ value_median_quri_research = 0.5 to 5
 item_median_quri_research = {
   cluster: "3",
   id: "3.3",
+  id_num: 10,
   short_name: "1h Programming @ QURI",
   name: "Value of an hour of programming at QURI",
   description: "Value of a typical hour of programming time at QURI, e.g., creating a new tool, improving or mantaining Squiggle/Metaforecast/Guesstimate",
@@ -476,75 +486,120 @@ isZero = {|x| // a hack, for now
   result 
 }
 
+getFittedLogNormal = {|dist| 
+  lower_cdf = inv(dist, 0.05)
+  upper_cdf = inv(dist, 0.95)
+
+  result = to(lower_cdf, upper_cdf)
+  result
+
+}
+
 getRelativeValues = { |intervention_1, intervention_2|
-  values_1 = intervention_1.value
-  values_2 = intervention_2.value
-  levels_1 = [ isZero(values_1.human_qalys), isZero(values_1.quri_research), isZero(values_1.large_animal_qalys), isZero(values_1.small_animal_qalys) ]
 
-  levels_2 = [ isZero(values_2.human_qalys), isZero(values_2.quri_research), isZero(values_2.large_animal_qalys), isZero(values_2.small_animal_qalys)]
-
-  levels_common = [
-    levels_1[0] || levels_2[0],
-    levels_1[1] || levels_2[1],
-    levels_1[2] || levels_2[2],
-    levels_1[3] || levels_2[3]
-  ]
-
-  common_unit = getCommonUnit(levels_common)
-
-  if common_unit == 1 then { // human qalys
-
-    human_value_1 = values_1.human_qalys * 1 + 
-      values_1.quri_research * value_per_quri_hour_in_qalys +
-      values_1.large_animal_qalys * large_animal_to_human +
-      values_1.small_animal_qalys *  small_animal_to_large_animal * large_animal_to_human 
-    
-    human_value_2 = values_2.human_qalys * 1 + 
-      values_2.quri_research * value_per_quri_hour_in_qalys +
-      values_2.large_animal_qalys * large_animal_to_human +
-      values_2.small_animal_qalys *  small_animal_to_large_animal * large_animal_to_human 
-    
-    relative_value_point_estimate = mean(human_value_1)/mean(human_value_2)
-    relative_value_range = to(relative_value_point_estimate/10, relative_value_point_estimate*10)
-    relative_value_range
-
+  // Check if they are the same value
+  if intervention_1.id_num == intervention_2.id_num then {
+    result = mixture(1)
+    result 
   } else {
-    (if common_unit == 2 then { // quri research
 
-      quri_research_value_1 = values_1.quri_research 
-      quri_research_value_2 = values_2.quri_research
-      relative_value_point_estimate = mean(quri_research_value_1)/mean(quri_research_value_1)
-      relative_value_range = to(relative_value_point_estimate/10, relative_value_point_estimate*10)
-      relative_value_range
+    values_1 = intervention_1.value
+    values_2 = intervention_2.value
+    levels_1 = [ isZero(values_1.human_qalys), isZero(values_1.quri_research), isZero(values_1.large_animal_qalys), isZero(values_1.small_animal_qalys) ]
+
+    levels_2 = [ isZero(values_2.human_qalys), isZero(values_2.quri_research), isZero(values_2.large_animal_qalys), isZero(values_2.small_animal_qalys)]
+
+    levels_common = [
+      levels_1[0] || levels_2[0],
+      levels_1[1] || levels_2[1],
+      levels_1[2] || levels_2[2],
+      levels_1[3] || levels_2[3]
+    ]
+
+    common_unit = getCommonUnit(levels_common)
+
+    if common_unit == 1 then { // human qalys
+
+      human_value_1 = values_1.human_qalys * 1 + 
+        values_1.quri_research * value_per_quri_hour_in_qalys +
+        values_1.large_animal_qalys * large_animal_to_human +
+        values_1.small_animal_qalys *  small_animal_to_large_animal * large_animal_to_human 
+      
+      human_value_2 = values_2.human_qalys * 1 + 
+        values_2.quri_research * value_per_quri_hour_in_qalys +
+        values_2.large_animal_qalys * large_animal_to_human +
+        values_2.small_animal_qalys *  small_animal_to_large_animal * large_animal_to_human 
+      
+      // Previous strategy:
+      // relative_value_point_estimate = mean(human_value_1)/mean(human_value_2)
+      // relative_value_range = to(relative_value_point_estimate/10, 
+      // relative_value_point_estimate*10)
+      // relative_value_range
+      
+      // Now, here is something ingenious I could do: 
+      // fit impact to two lognormals
+      // and then divide them. Lol. 
+
+      
+      fitted_lognormal_1 = getFittedLogNormal(human_value_1)
+      fitted_lognormal_2 = getFittedLogNormal(human_value_2)
+      relative_value = fitted_lognormal_1 / fitted_lognormal_2
+      relative_value
 
     } else {
-      (if common_unit == 3 then { // large animal
-
-          large_animal_value_1 = 
-            values_1.large_animal_qalys * large_animal_to_large_animal +
-            values_1.small_animal_qalys *  small_animal_to_large_animal 
-          
-          large_animal_value_2 = 
-            values_2.large_animal_qalys * large_animal_to_large_animal +
-            values_2.small_animal_qalys *  small_animal_to_large_animal 
-          
-          relative_value_point_estimate = mean(large_animal_value_1)/mean(large_animal_value_2)
-          relative_value_range = to(relative_value_point_estimate/10, relative_value_point_estimate*10)
-          relative_value_range
+      (if common_unit == 2 then { // quri research
+        
+        quri_research_value_1 = values_1.quri_research 
+        quri_research_value_2 = values_2.quri_research
+        
+        // Previous strategy: 
+        // relative_value_point_estimate = mean(quri_research_value_1)/mean(quri_research_value_1)
+        // relative_value_range = to(relative_value_point_estimate/10, relative_value_point_estimate*10)
+        // relative_value_range
+        
+        fitted_lognormal_1 = getFittedLogNormal(quri_research_value_1)
+        fitted_lognormal_2 = getFittedLogNormal(quri_research_value_2)
+        relative_value = fitted_lognormal_1 / fitted_lognormal_2
+        relative_value
 
       } else {
-        if common_unit == 4 then {
-          small_animal_value_1 = values_1.small_animal_qalys
-          small_animal_value_2 = values_2.small_animal_qalys
-          relative_value_point_estimate = mean(small_animal_value_1)/mean(small_animal_value_2)
-          relative_value_range = to(relative_value_point_estimate/10, relative_value_point_estimate*10)
-          relative_value_range
-          
+        (if common_unit == 3 then { // large animal
+
+            large_animal_value_1 = 
+              values_1.large_animal_qalys * large_animal_to_large_animal +
+              values_1.small_animal_qalys *  small_animal_to_large_animal 
+            
+            large_animal_value_2 = 
+              values_2.large_animal_qalys * large_animal_to_large_animal +
+              values_2.small_animal_qalys *  small_animal_to_large_animal 
+            
+            // relative_value_point_estimate = mean(large_animal_value_1)/mean(large_animal_value_2)
+            // relative_value_range = to(relative_value_point_estimate/10, relative_value_point_estimate*10)
+            // relative_value_range
+            fitted_lognormal_1 = getFittedLogNormal(large_animal_value_1)
+            fitted_lognormal_2 = getFittedLogNormal(large_animal_value_2)
+            relative_value = fitted_lognormal_1 / fitted_lognormal_2
+            relative_value
+
         } else {
-          - 42 // some value to indicate that things have gone wrong 
-        }
-      })
-    } )
+          if common_unit == 4 then {
+            small_animal_value_1 = values_1.small_animal_qalys
+            small_animal_value_2 = values_2.small_animal_qalys
+            
+            // relative_value_point_estimate = mean(small_animal_value_1)/mean(small_animal_value_2)
+            // relative_value_range = to(relative_value_point_estimate/10, relative_value_point_estimate*10)
+            // relative_value_range
+            fitted_lognormal_1 = getFittedLogNormal(small_animal_value_1)
+            fitted_lognormal_2 = getFittedLogNormal(small_animal_value_2)
+            relative_value = fitted_lognormal_1 / fitted_lognormal_2
+            relative_value
+            
+          } else {
+            - 42 // some value to indicate that things have gone wrong 
+          }
+        })
+      } )
+    }
   }
   
 }
@@ -558,12 +613,6 @@ getRelativeValues = { |intervention_1, intervention_2|
  ]
 
 // List.map(items, {|x| x.name})
-
-/*
-
-
-
-*/
 
  item_A = items[4]
  item_B = items[8]
