@@ -66,7 +66,8 @@ item_fwi = {
       human_qalys: d_0,
       large_animal_qalys: d_0,
       small_animal_qalys: num_small_animal_qalys_fwi
-  }
+  },
+  extra_high_uncertainty: false // for asteroids and other very speculative interventions
 }
 
 // Intervention 1.2: Wild Animal Initiative 
@@ -121,7 +122,8 @@ item_wai = {
       human_qalys: d_0,
       large_animal_qalys: value_of_wai_for_large_animals,
       small_animal_qalys: value_of_wai_for_small_animals
-  }
+  },
+  extra_high_uncertainty: false // for asteroids and other very speculative interventions
 }
 
 // Intervention 1.3: Beyond Meat
@@ -163,7 +165,8 @@ item_beyond_meat = {
       human_qalys: d_0,
       large_animal_qalys: value_of_beyond_meat_in_large_animal_qalys,
       small_animal_qalys: d_0
-  }
+  },
+  extra_high_uncertainty: false // for asteroids and other very speculative interventions
 }
 
 /* ## Cluster 2: Diverse interventions of different types */
@@ -197,7 +200,8 @@ item_against_malaria_foundation = {
       human_qalys: value_amf_2021,
       large_animal_qalys: d_0,
       small_animal_qalys: d_0
-  }
+  },
+  extra_high_uncertainty: false // for asteroids and other very speculative interventions
 }
 
 // Intervention 2.2: Value of avoiding at least medium-sized asteroid impacts for a year 
@@ -244,7 +248,8 @@ item_no_asteroids = {
       human_qalys: value_no_large_asteroids_year,
       large_animal_qalys: d_0, // actually it would also kill large numbers of animals, but ignoring that.
       small_animal_qalys: d_0
-  }
+  },
+  extra_high_uncertainty: true // for asteroids and other very speculative interventions
 }
 
 /* Cluster 3: Various research outputs at QURI */
@@ -298,7 +303,8 @@ item_marginal_quri_ops = {
       human_qalys: d_0, // note that hopefully it eventually does contribute to human QALYs, it's just that these aren't estimated directly
       large_animal_qalys: d_0, 
       small_animal_qalys: d_0
-  }
+  },
+  extra_high_uncertainty: false // for asteroids and other very speculative interventions
 }
 
 /* Freeform research */
@@ -317,7 +323,8 @@ item_freeform_research_quri = {
       human_qalys: d_0, // note that hopefully it eventually does contribute to human QALYs, it's just that these aren't estimated directly
       large_animal_qalys: d_0, 
       small_animal_qalys: d_0
-  }
+  },
+  extra_high_uncertainty: false // for asteroids and other very speculative interventions
 }
 
 /* Managing Nuño's research */
@@ -336,7 +343,8 @@ item_research_management_quri = {
       human_qalys: d_0,
       large_animal_qalys: d_0, 
       small_animal_qalys: d_0
-  }
+  },
+  extra_high_uncertainty: false // for asteroids and other very speculative interventions
 }
 
 /* Value of 1h of Slava's time programming */
@@ -353,7 +361,8 @@ item_quri_programming = {
       human_qalys: d_0,
       large_animal_qalys: d_0, 
       small_animal_qalys: d_0
-  }
+  },
+  extra_high_uncertainty: false // for asteroids and other very speculative interventions
 }
 
 /* Value of the median 1h of my (Nuño's) time researching */
@@ -374,7 +383,8 @@ item_median_quri_research = {
       human_qalys: d_0,
       large_animal_qalys: d_0, 
       small_animal_qalys: d_0
-  }
+  },
+  extra_high_uncertainty: false // for asteroids and other very speculative interventions
 }
 
 // # Conversion factors
@@ -492,8 +502,18 @@ getFittedLogNormal = {|dist|
 
   result = to(lower_cdf, upper_cdf)
   result
+}
+
+getFittedLogNormalAroundMean = {|dist| 
+  m = mean(dist)
+  lower_cdf = m/10
+  upper_cdf = m * 10
+
+  result = to(lower_cdf, upper_cdf)
+  result
 
 }
+
 truncateAtZero(dist) = truncateLeft(dist, 0)
 t0 = truncateAtZero
 
@@ -530,34 +550,19 @@ getRelativeValues = { |intervention_1, intervention_2|
         values_2.quri_research * value_per_quri_hour_in_qalys +
         values_2.large_animal_qalys * large_animal_to_human +
         values_2.small_animal_qalys *  small_animal_to_large_animal * large_animal_to_human 
-      
-      // Previous strategy:
-      // relative_value_point_estimate = mean(human_value_1)/mean(human_value_2)
-      // relative_value_range = to(relative_value_point_estimate/10, 
-      // relative_value_point_estimate*10)
-      // relative_value_range
-      
-      // Now, here is something ingenious I could do: 
-      // fit impact to two lognormals
-      // and then divide them. Lol. 
 
-      
-      fitted_lognormal_1 = getFittedLogNormal(human_value_1)
-      fitted_lognormal_2 = getFittedLogNormal(human_value_2)
-      relative_value = fitted_lognormal_1 / fitted_lognormal_2
+      fitted_distribution_1 = if !intervention_1.extra_high_uncertainty then getFittedLogNormal(human_value_1) else getFittedLogNormalAroundMean(human_value_1)
+      fitted_distribution_2 = if !intervention_2.extra_high_uncertainty then getFittedLogNormal(human_value_2) else getFittedLogNormalAroundMean(human_value_2)
+
+      relative_value = fitted_distribution_1 / fitted_distribution_2
       result = t0(relative_value)
       result
-
+     
     } else {
       (if common_unit == 2 then { // quri research
         
         quri_research_value_1 = values_1.quri_research 
         quri_research_value_2 = values_2.quri_research
-        
-        // Previous strategy: 
-        // relative_value_point_estimate = mean(quri_research_value_1)/mean(quri_research_value_1)
-        // relative_value_range = to(relative_value_point_estimate/10, relative_value_point_estimate*10)
-        // relative_value_range
         
         fitted_lognormal_1 = getFittedLogNormal(quri_research_value_1)
         fitted_lognormal_2 = getFittedLogNormal(quri_research_value_2)
@@ -568,22 +573,19 @@ getRelativeValues = { |intervention_1, intervention_2|
       } else {
         (if common_unit == 3 then { // large animal
 
-            large_animal_value_1 = 
-              values_1.large_animal_qalys +
-              values_1.small_animal_qalys *  small_animal_to_large_animal 
-            
-            large_animal_value_2 = 
-              values_2.large_animal_qalys +
-              values_2.small_animal_qalys *  small_animal_to_large_animal 
-            
-            // relative_value_point_estimate = mean(large_animal_value_1)/mean(large_animal_value_2)
-            // relative_value_range = to(relative_value_point_estimate/10, relative_value_point_estimate*10)
-            // relative_value_range
-            fitted_lognormal_1 = getFittedLogNormal(large_animal_value_1)
-            fitted_lognormal_2 = getFittedLogNormal(large_animal_value_2)
-            relative_value = fitted_lognormal_1 / fitted_lognormal_2
-            result = t0(relative_value)
-            result
+          large_animal_value_1 = 
+            values_1.large_animal_qalys +
+            values_1.small_animal_qalys *  small_animal_to_large_animal 
+          
+          large_animal_value_2 = 
+            values_2.large_animal_qalys +
+            values_2.small_animal_qalys *  small_animal_to_large_animal 
+
+          fitted_lognormal_1 = getFittedLogNormal(large_animal_value_1)
+          fitted_lognormal_2 = getFittedLogNormal(large_animal_value_2)
+          relative_value = fitted_lognormal_1 / fitted_lognormal_2
+          result = t0(relative_value)
+          result
 
         } else {
           if common_unit == 4 then {
@@ -593,6 +595,7 @@ getRelativeValues = { |intervention_1, intervention_2|
             // relative_value_point_estimate = mean(small_animal_value_1)/mean(small_animal_value_2)
             // relative_value_range = to(relative_value_point_estimate/10, relative_value_point_estimate*10)
             // relative_value_range
+
             fitted_lognormal_1 = getFittedLogNormal(small_animal_value_1)
             fitted_lognormal_2 = getFittedLogNormal(small_animal_value_2)
             relative_value = fitted_lognormal_1 / fitted_lognormal_2
@@ -632,4 +635,4 @@ items_object = {
   "i9":item_median_quri_research
 }
 fn(a,b) = getRelativeValues(items_object[a], items_object[b])
-fn
+fn("i5", "i4")
