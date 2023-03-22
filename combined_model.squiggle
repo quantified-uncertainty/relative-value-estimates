@@ -362,16 +362,15 @@ value_median_quri_research_hour = 1 // baseline unit
 // than the expected value of a research hour, since sometimes I am inspired
 // and I produce fairly valuable stuff
 
-value_median_quri_research = 0.5 to 5
 item_median_quri_research = {
   cluster: "3",
   id: "3.3",
   id_num: 10,
-  short_name: "1h Programming @ QURI",
-  name: "Value of an hour of programming at QURI",
-  description: "Value of a typical hour of programming time at QURI, e.g., creating a new tool, improving or mantaining Squiggle/Metaforecast/Guesstimate",
+  short_name: "Median QURI research hour",
+  name: "Value of the median hour of research at QURI",
+  description: "Note that the value of the median hour is probably much worse than the expected value of a research hour, since perhaps research value is lognormal, of if ''inspired'' research is more valuable",
   value: {
-      quri_research: value_median_quri_research,
+      quri_research: mixture(value_median_quri_research_hour),
       human_qalys: d_0,
       large_animal_qalys: d_0, 
       small_animal_qalys: d_0
@@ -482,13 +481,14 @@ getCommonUnit = {|levels_i|
 }
 
 isZero = {|x| // a hack, for now
-  result = mean(mixture(x)) == 0
+  epsilon = 10e-4
+  result = abs(mean(mixture(x))) < epsilon
   result 
 }
 
 getFittedLogNormal = {|dist| 
-  lower_cdf = max(inv(dist, 0.05),1)
-  upper_cdf = max(inv(dist, 0.95), lower_cdf + 1)
+  lower_cdf = max([inv(dist, 0.05),1])
+  upper_cdf = max([inv(dist, 0.95), lower_cdf + 1])
 
   result = to(lower_cdf, upper_cdf)
   result
@@ -517,6 +517,7 @@ getRelativeValues = { |intervention_1, intervention_2|
     ]
 
     common_unit = getCommonUnit(levels_common)
+    common_unit
 
     if common_unit == 1 then { // human qalys
 
@@ -545,6 +546,7 @@ getRelativeValues = { |intervention_1, intervention_2|
       fitted_lognormal_2 = getFittedLogNormal(human_value_2)
       relative_value = fitted_lognormal_1 / fitted_lognormal_2
       relative_value
+      
 
     } else {
       (if common_unit == 2 then { // quri research
@@ -614,11 +616,13 @@ getRelativeValues = { |intervention_1, intervention_2|
 
 // List.map(items, {|x| x.name})
 
- item_A = items[4]
- item_B = items[8]
+ item_A = items[8]
+ item_B = items[9]
 
 {
+  item_A_name: item_A.name,
+  item_B_name: item_B.name,
+  relativeValue: getRelativeValues(item_A, item_B),
   item_A: item_A,
   item_B: item_B,
-  relativeValue: getRelativeValues(item_A, item_B)
 }
