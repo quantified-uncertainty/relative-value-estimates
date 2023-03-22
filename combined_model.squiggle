@@ -545,8 +545,8 @@ getRelativeValues = { |intervention_1, intervention_2|
       fitted_lognormal_1 = getFittedLogNormal(human_value_1)
       fitted_lognormal_2 = getFittedLogNormal(human_value_2)
       relative_value = fitted_lognormal_1 / fitted_lognormal_2
-      t0(relative_value)
-      
+      result = t0(relative_value)
+      result
 
     } else {
       (if common_unit == 2 then { // quri research
@@ -562,7 +562,8 @@ getRelativeValues = { |intervention_1, intervention_2|
         fitted_lognormal_1 = getFittedLogNormal(quri_research_value_1)
         fitted_lognormal_2 = getFittedLogNormal(quri_research_value_2)
         relative_value = fitted_lognormal_1 / fitted_lognormal_2
-        t0(relative_value)
+        result = t0(relative_value)
+        result
 
       } else {
         (if common_unit == 3 then { // large animal
@@ -581,7 +582,8 @@ getRelativeValues = { |intervention_1, intervention_2|
             fitted_lognormal_1 = getFittedLogNormal(large_animal_value_1)
             fitted_lognormal_2 = getFittedLogNormal(large_animal_value_2)
             relative_value = fitted_lognormal_1 / fitted_lognormal_2
-            t0(relative_value)
+            result = t0(relative_value)
+            result
 
         } else {
           if common_unit == 4 then {
@@ -594,7 +596,8 @@ getRelativeValues = { |intervention_1, intervention_2|
             fitted_lognormal_1 = getFittedLogNormal(small_animal_value_1)
             fitted_lognormal_2 = getFittedLogNormal(small_animal_value_2)
             relative_value = fitted_lognormal_1 / fitted_lognormal_2
-            t0(relative_value)
+            result = t0(relative_value)
+            result
             
           } else {
             - 42 // some value to indicate that things have gone wrong 
@@ -614,15 +617,19 @@ getRelativeValues = { |intervention_1, intervention_2|
   item_marginal_quri_ops, item_freeform_research_quri, item_research_management_quri, item_quri_programming, item_median_quri_research
  ]
 
-// List.map(items, {|x| x.name})
+ // Glue code for https://relative-values-git-relative-values-quantified-uncertainty.vercel.app/interfaces/cross-cause/models/Cross-Cause-Estimate
 
- item_A = items[3]
- item_B = items[4]
-
-{
-  item_A_name: item_A.name,
-  item_B_name: item_B.name,
-  relativeValue: getRelativeValues(item_A, item_B),
-  item_A_value: item_A.value,
-  item_B_value: item_B.value,
+items_object = {
+  "i0": item_fwi, 
+  "i1": item_wai, 
+  "i2": item_beyond_meat, 
+  "i3": item_against_malaria_foundation, 
+  "i4": item_no_asteroids, 
+  "i5": item_marginal_quri_ops, 
+  "i6":item_freeform_research_quri, 
+  "i7": item_research_management_quri, 
+  "i8": item_quri_programming, 
+  "i9":item_median_quri_research
 }
+fn(a,b) = getRelativeValues(items_object[a], items_object[b])
+fn
