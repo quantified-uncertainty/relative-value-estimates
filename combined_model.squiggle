@@ -477,7 +477,7 @@ getCommonUnit = {|levels_i|
       )
     )
     )
-  1
+    result
 }
 
 isNotZero = {|x| // a hack, for now
@@ -521,11 +521,15 @@ getRelativeValues = { |intervention_1, intervention_2|
       
       levels_1: levels_1,
       levels_2: levels_2,
-      common_unit: common_unit
+      common_levels: levels_common,
+      common_unit: common_unit,
+      common_human: (levels_common[0] == true) ||
+    (levels_common[1] == true && levels_common[2] == true) ||
+    (levels_common[1] == true && levels_common[3] == true) 
     }
 
 
-    if true then print else 
+    if false then print else 
     
 
     if common_unit == 1 then { // human qalys
