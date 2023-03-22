@@ -487,8 +487,8 @@ isZero = {|x| // a hack, for now
 }
 
 getFittedLogNormal = {|dist| 
-  lower_cdf = inv(dist, 0.05)
-  upper_cdf = inv(dist, 0.95)
+  lower_cdf = max(inv(dist, 0.05),1)
+  upper_cdf = max(inv(dist, 0.95), lower_cdf + 1)
 
   result = to(lower_cdf, upper_cdf)
   result
