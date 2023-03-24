@@ -172,47 +172,69 @@ item_zinc_lozenges = {
 	recommendation: recommendation_zinc_lozenges
 }
 
-// 
+// Vertical mouse
+cost_vertical_mouse = 18 // dollars
+baseline_chance_rsi = beta(1.6308424891839157, 13.480636131095403)
+// 1% to 30%
+probability_avoiding_rsi = (0.1 to 2)/100
+// 0.1% to 2%
+// conditional on otherwise having acquired it
+productivity_hit_from_rsi = beta(2.7271185998368788, 9.00518632631021)
+// 5% to 50%
+duration_rsi = 0.5 to 10 // years
+chance_any_salary_drop = beta(2.7271185998368788, 9.00518632631021)
+// 5% to 50%
+reduction_in_salary_due_to_productivity_drop_as_fraction_of_total_salary = beta(6.016238977583864, 7.597431061918561)
 
-
----
-
-item_nice_headphones = {
-	id: "2",
-	name: "Nice headphones (e.g., Bose 45)",
-	cost: cost_nice_headphones,
-	value: value_nice_headphones,
-	recommendation: recommendation_nice_headphones
+value_vertical_mouse = baseline_chance_rsi * probability_avoiding_rsi * duration_rsi * (productivity_hit_from_rsi * value_doubling_productivity + chance_any_salary_drop * reduction_in_salary_due_to_productivity_drop_as_fraction_of_total_salary)
+recommendation_vertical_mouse = mean(value_vertical_mouse) > cost_vertical_mouse ? true : false
+item_vertical_mouse = {
+	id: "8",
+	name: "Vertical mouse (e.g., from Anker)",
+	cost: cost_vertical_mouse,
+	value: value_vertical_mouse,
+	recommendation: recommendation_vertical_mouse
 }
 
-// Vanguard???
-
-// https://forum.effectivealtruism.org/posts/o7E47dNfeArTTQh74/10-things-i-bought-and-recommend-2020
-// Nothing in particular there that I feel like estimating
-
-// https://forum.effectivealtruism.org/posts/o7E47dNfeArTTQh74/10-things-i-bought-and-recommend-2020
-// Stuff for foodies
-
-// https://thewholesky.wordpress.com/2017/03/03/computer-setup/
-// ehh, I use legos.
-
-// https://forum.effectivealtruism.org/posts/BnnDRy2yFzJqJ4Mvz/things-i-recommend-you-buy-and-use
-
-// https://yakopov.me/things-i-recommend-you-buy-and-use/
-
-// Vertical mouse
-
 // External microphone
+cost_external_microphone = 100 to 500
+improvement_in_calls = 0.05 to 2
+// 5% to 200%
+value_of_better_call = 3 to 12 // dollars 
+// how much would you pay to have "better calls",
+// arbitrarily defined
+num_calls_per_year = 52 to 100
+// 52 = once a week
 
-// Better keyboard
+value_external_microphone = improvement_in_calls *value_of_better_call *num_calls_per_year
+recommendation_external_microphone = mean(value_external_microphone) > cost_external_microphone ? true : false
+item_external_microphone = {
+	id: "9",
+	name: "External microphone (value for 1 year)",
+	cost: cost_external_microphone,
+	value: value_external_microphone,
+	recommendation: recommendation_external_microphone
+}
 
-// https://yakopov.me/things-i-recommend-you-buy-and-use-2/
+// Watch
+cost_casio_watch = 15 to 50
+num_check_time_day = 1 to 20
+would_otherwise_check_phone = beta(1.5598524392792164, 0.36044253926611014)
+// 20% to 100% of the time
+would_otherwise_get_distracted_by_phone = beta(5.224031849460337, 3.078888443018226)
+// 30% to 90%
+duration_distraction_seconds = 15 to 60
+value_not_getting_distracted_by_phone = value_additional_free_hour * duration_distraction_seconds / 3600
+// ^ one could also input the value of no distractions directly: 0.2 to 2 // 20cts to 2 dollars
+coolness_factor = 50 to 200 
+value_casio_watch = 365 * (num_check_time_day * would_otherwise_check_phone * would_otherwise_get_distracted_by_phone * value_not_getting_distracted_by_phone) + coolness_factor
+recommendation_casio_watch = value_casio_watch > cost_casio_watch ? true : false
 
-// https://www.gleech.org/stuff
+item_casio_watch = {
+	id: "10",
+	name: "Watch (e.g., Casio F-91W)",
+	cost: cost_casio_watch,
+	value: value_casio_watch,
+	recommendation: recommendation_casio_watch
+}
 
-// https://web.archive.org/web/20210618202343/https://davidmn.org/things-i-recommend-you-buy-2020-edition/
-
-// https://slatestarcodex.com/2015/12/03/product-recommendations-2015/
-Dental floss sythes
-
-// https://guzey.com/tools-gear/

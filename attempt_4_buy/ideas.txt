@@ -1,0 +1,44 @@
+
+// Dental floss sythes
+
+---
+
+item_nice_headphones = {
+	id: "2",
+	name: "Nice headphones (e.g., Bose 45)",
+	cost: cost_nice_headphones,
+	value: value_nice_headphones,
+	recommendation: recommendation_nice_headphones
+}
+
+// Vanguard???
+
+// https://forum.effectivealtruism.org/posts/o7E47dNfeArTTQh74/10-things-i-bought-and-recommend-2020
+// Nothing in particular there that I feel like estimating
+
+// https://forum.effectivealtruism.org/posts/o7E47dNfeArTTQh74/10-things-i-bought-and-recommend-2020
+// Stuff for foodies
+
+// https://thewholesky.wordpress.com/2017/03/03/computer-setup/
+// ehh, I use legos.
+
+// https://forum.effectivealtruism.org/posts/BnnDRy2yFzJqJ4Mvz/things-i-recommend-you-buy-and-use
+
+// https://yakopov.me/things-i-recommend-you-buy-and-use/
+
+// Vertical mouse
+
+// External microphone
+
+// Better keyboard
+
+// https://yakopov.me/things-i-recommend-you-buy-and-use-2/
+
+// https://www.gleech.org/stuff
+
+// https://web.archive.org/web/20210618202343/https://davidmn.org/things-i-recommend-you-buy-2020-edition/
+
+// https://slatestarcodex.com/2015/12/03/product-recommendations-2015/
+Dental floss sythes
+
+// https://guzey.com/tools-gear/
