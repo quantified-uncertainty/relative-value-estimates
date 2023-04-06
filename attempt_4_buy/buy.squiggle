@@ -1,5 +1,5 @@
 // Utils
-ss(dist) = SampleSet.fromDist(dist)
+ss = {|dist| SampleSet.fromDist(dist) }
 // note: SampleSet ensures that the correlation 
 // is propagated, which allows for relative values.
 
@@ -254,10 +254,57 @@ item_casio_watch = {
 	recommendation: recommendation_casio_watch
 }
 
+// An hour of your time
+cost_hour = value_additional_free_hour
+value_hour = value_additional_free_hour
+recommendation_hour = true
+// at your current margin, do you prefer to have an additional hour of free time, or what you could earn working for your marginal hour?
+
+item_hour = {
+	id: "11",
+  num_id: 11,
+	name: "An additional hour of your time",
+	cost: cost_hour,
+	value: value_hour,
+	recommendation: recommendation_hour
+}
+
+// 100 dollars
+cost_dollars = mixture(100)
+value_dollars = mixture(100)
+recommendation_dollars = false // arbitrary, value = cost
+item_100_dollars = {
+	id: "12",
+  num_id: 12,
+	name: "$100 dollars",
+	cost: cost_dollars,
+	value: value_dollars,
+	recommendation: recommendation_dollars
+}
+
+// A blog
+cost_blog = 10 + (10 to 20) * 12 + (20 to 100) * value_additional_free_hour
+// ^ domain, hosting, value of time
+intrinsic_value_blog = 1k to 20k
+value_in_terms_of_opened_opportunities = 5k to 20k
+
+value_blog = intrinsic_value_blog + value_in_terms_of_opened_opportunities
+recommendation_blog = mean(value_blog) > mean(cost_blog) ? true : false
+item_blog = {
+	id: "13",
+  num_id: 13,
+	name: "Creating a blog",
+	cost: cost_blog,
+	value: value_blog,
+	recommendation: recommendation_blog
+}
+
+// 
+
  /* Put all items in a list */
 
 items = [
-  item_nice_computer, item_nice_headphones, item_hommini_sleep_mask, item_melatonin, item_spare_laptop_charger, item_external_portable_battery, item_zinc_lozenges, item_vertical_mouse, item_external_microphone, item_casio_watch
+  item_nice_computer, item_nice_headphones, item_hommini_sleep_mask, item_melatonin, item_spare_laptop_charger, item_external_portable_battery, item_zinc_lozenges, item_vertical_mouse, item_external_microphone, item_casio_watch, item_hour, item_100_dollars, item_blog 
 ]
 
  // Glue code for https://relative-values-git-relative-values-quantified-uncertainty.vercel.app/interfaces/cross-cause/models/Cross-Cause-Estimate
@@ -273,6 +320,9 @@ items_object = {
 	"i7": item_vertical_mouse,
 	"i8": item_external_microphone,
 	"i9": item_casio_watch
+  "i10": item_hour,
+	"i11": item_100_dollars,
+	"i12": item_blog
 }
 
 getRelativeValues = {|item_1, item_2|
@@ -281,4 +331,3 @@ getRelativeValues = {|item_1, item_2|
 
 fn(a,b) = getRelativeValues(items_object[a], items_object[b])
 // fn("i5", "i4")
-item_nice_headphones
