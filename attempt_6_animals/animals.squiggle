@@ -1,0 +1,47 @@
+    ss(t) = SampleSet.fromDist(t)
+    animalModule = {
+      //Sentient Welfare
+      average_qaly_per_year = ss(0.7 to 0.9)
+      qalys_in_farming_per_year = ss(mx(-(0.2 to 100), 0.01 to 0.5, [0.7,0.3]))
+      lifespan_in_farming = ss(0.3 to 0.6)
+      cow_qalys_per_human = ss(0.1 to 0.6)
+      human_params = ["qaly", "life"]
+      animal_params = ["qaly", "life", "farmed_life", "farmed_animal_cal_100", "farmed_animal_lb_1"]
+      
+      animals = {
+          human: {qaly: mx(1), lifespan: (ss(70 to 75))},
+          cow: {qaly: cow_qalys_per_human, lifespan: (ss(17 to 20)), calories: 840720, poundsOfMeat: 440},
+          pig: {qaly: cow_qalys_per_human * (0.5 to 1.5), lifespan: (ss(15 to 20)), calories: 37000, poundsOfMeat: 144},
+          chicken: {qaly: cow_qalys_per_human * ss(0.1 to 0.4), lifespan: ss(3.5 to 4.5), calories: 1430, poundsOfMeat: 4.7},
+          turkey: {qaly: cow_qalys_per_human * ss(0.1 to 0.5), lifespan: ss(8 to 10), calories: 7205, poundsOfMeat: 17 to 24},
+          salmon: {qaly: cow_qalys_per_human * ss(0.01 to 0.3), lifespan: ss(1.5 to 2), calories: 309, poundsOfMeat: 2.3},
+          shrimp: {qaly: cow_qalys_per_human * ss(0.001 to 0.05), lifespan: ss(1 to 2), calories: 7, poundsOfMeat: 1/25}
+      }
+    
+      animal_saved_life_value(a) = a.qaly * a.lifespan * average_qaly_per_year
+      farmed_animal_life(a) = a.qaly * a.lifespan * lifespan_in_farming * qalys_in_farming_per_year
+      farmed_animal_cal_100(a) = 100 * a.qaly * a.lifespan * lifespan_in_farming * qalys_in_farming_per_year / a.calories
+      farmed_animal_lb_1(a) = a.qaly * a.lifespan * lifespan_in_farming * qalys_in_farming_per_year / a.poundsOfMeat
+    
+      values = {
+        qaly: {|a| a.qaly},
+        life: {|a| a.life},
+        lifespan: {|a| a.lifespan},
+        life: animal_saved_life_value,
+        farmed_life: farmed_animal_life,
+        farmed_animal_lb_1: farmed_animal_lb_1,
+        farmed_animal_cal_100: farmed_animal_cal_100
+      }
+      
+      getValue(animal, param) = {
+        values[param](animals[animal])
+      }
+    
+      toDict(animals, props) = animals -> List.map( 
+        {|animal|
+           props -> List.map({|param| {animal: animal, p: param, fn:{|| getValue(animal, param)}}})
+        }
+      ) -> List.flatten -> List.map({|i| [i.animal + "_" + i.p, i.fn]}) -> Dict.fromList
+      
+      {getValue: getValue, asDict: Dict.merge(toDict(["human"], human_params),toDict(["cow", "chicken", "turkey", "salmon", "pig", "shrimp"], animal_params))}
+    }

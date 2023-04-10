@@ -1,0 +1,17 @@
+willingness_of_open_philanthropy_to_listen_to_us = 0.01 to 0.1
+open_philanthropy_budget = 7B to 20B
+fraction_of_budget_influenced = 0.001 to 0.05
+open_philanthropy_units = willingness_of_open_philanthropy_to_listen_to_us * open_philanthropy_budget * fraction_of_budget_influenced
+
+value_intervention_1 = 1 to 100 // in open_philanthropy_units
+value_intervention_2 = 5 to 20 // in open_philanthropy_units
+
+joint_pdf_samples = open_philanthropy_units -> SampleSet.fromDist -> SampleSet.toList -> List.map({|op_sample| 
+  sample_intervention_1 = sample(value_intervention_1)
+  sample_intervention_2  =sample(value_intervention_2)
+  value_1 = sample_intervention_1 * op_sample
+  value_2 = sample_intervention_2 * op_sample
+
+  [ value_1, value_2 ]
+})
+joint_pdf_samples
