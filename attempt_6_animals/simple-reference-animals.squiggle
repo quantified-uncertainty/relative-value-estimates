@@ -3,9 +3,19 @@
   - [x] Cow
 	- [x] Pigs
 	- [x] Chicken
-	- [ ] Fish
+	- [x] Fish
 - Put them together to estimate a few programmes or organizations
-  - Select programmes or orgs
+  - Select programmes or orgs: ACE top charities: <https://animalcharityevaluators.org/donation-advice/recommended-charities/> + Fish Welfare Initiative.
+  - Estimate the value of each org.
+		- [-] Faunalytics: Too meta, postpone until later.
+		- [ ] The Humane League
+			- [ ] Open Wings Alliance
+		- [ ] The Good Food Institute
+			- [ ] Program #1
+			- [ ] Program #2
+			- [ ] ...
+		- [ ] Wild Animal Initiative: Rough estimate for the organization.
+    - [x] Fish Welfare Initiative 
 	- ...
 */
 
@@ -18,7 +28,7 @@ value_farmed_cow_year_in_human_qalys = normal({ p10: -0.2, p90: 0.1 })
 // that cows do lead net positive lives
 weight_cow = mixture([450 to 1800, 360 to 1100], [1/2,1/2])
 lifetime_cow = (30 to 42) / 12
-calories_cow = mixture(0.8M to 1.4M, 500k to 700k * weight_cow/1000) 
+calories_cow = mixture(0.8M to 1.4M, (500k to 700k) * weight_cow/1000) 
 // ^ kilocalories, averaging two estimates from <https://www.reddit.com/r/theydidthemonstermath/comments/a8ha9r/how_many_calories_are_in_a_whole_cow/>
 
 cow_estimates = {
@@ -94,3 +104,36 @@ salmon_estimates = {
 	calories: calories_salmon,
 	lifetime: lifetime_salmon
 }
+
+/* Fish Welfare Initiative 
+
+Sources: 
+- https://www.fishwelfareinitiative.org/impact
+- https://forum.effectivealtruism.org/posts/T5fSphiK6sQ6hyptX/opinion-estimating-invertebrate-sentience#Peter_Hurford
+- https://forum.effectivealtruism.org/posts/Qk3hd6PrFManj8K6o/rethink-priorities-welfare-range-estimates
+- https://nunosempere.com/blog/2023/02/19/bayesian-adjustment-to-rethink-priorities-welfare-range-estimates/
+
+Key simplification: assume that all fish are salmon. This is inaccurate, because salmon is a very particular & expensive species of fish. But I think it's ok to start with. Later I could easily add different species.
+
+*/
+
+fish_potentially_helped = 1M to 2M
+shrimp_potentially_helped = 1M to 2M
+improvement_as_proportion_of_lifetime = 0.05 to 0.5
+
+value_fwi_fish = 
+  fish_potentially_helped * 
+	improvement_as_proportion_of_lifetime * 
+	(value_happy_salmon_year_in_human_qalys / salmon_estimates.lifetime)
+
+value_of_shrimp_in_fish = (0.3 to 1)
+// ^ very uncertain, subjective
+
+value_fwi_shrimp = 
+  shrimp_potentially_helped * 
+	improvement_as_proportion_of_lifetime * 
+	(value_happy_salmon_year_in_human_qalys / salmon_estimates.lifetime) *
+  value_of_shrimp_in_fish
+
+value_fwi_so_far = value_fwi_fish + value_fwi_shrimp
+value_fwi_so_far
