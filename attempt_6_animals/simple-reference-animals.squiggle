@@ -2,7 +2,7 @@
 - Estimate a few animal QALYs
   - [x] Cow
 	- [x] Pigs
-	- [ ] Chicken
+	- [x] Chicken
 	- [ ] Fish
 - Put them together to estimate a few programmes or organizations
   - Select programmes or orgs
@@ -49,4 +49,25 @@ pig_estimates = {
 	value_year_in_human_qalys: value_farmed_pig_year_in_human_qalys,
 	calories: calories_pig,
 	lifetime: lifetime_pig
+}
+
+// Chickens (broilers)
+
+value_happy_chicken_year_in_human_qalys = 0.001 to 0.05
+value_tortured_chicken_year_in_human_qalys = -(0.01 to 0.2)
+value_farmed_chicken_year_in_human_qalys = value_tortured_chicken_year_in_human_qalys/(1 to 3)
+// ^ purely subjective estimates
+lifetime_chicken = (4 to 7)/52
+weight_chicken = 2 to 3.5
+// ^ kilograms. Not very sure, though
+kilograms_in_pounds = 1/0.454
+calories_per_pound_of_chicken_meat = 500 to 700
+calories_chicken = weight_chicken * kilograms_in_pounds * calories_per_pound_of_chicken_meat
+// ^ <https://teddit.nunosempere.com/r/1500isplenty/comments/m7uck1/how_to_figure_out_calories_of_a_whole_chicken/>
+
+chicken_estimates = {
+  name: "chicken",
+	value_year_in_human_qalys: value_farmed_chicken_year_in_human_qalys,
+	calories: calories_chicken,
+	lifetime: lifetime_chicken
 }
