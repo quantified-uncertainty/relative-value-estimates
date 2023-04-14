@@ -5,17 +5,19 @@
 	- [x] Chicken
 	- [x] Fish
 - Put them together to estimate a few programmes or organizations
-  - Select programmes or orgs: ACE top charities: <https://animalcharityevaluators.org/donation-advice/recommended-charities/> + Fish Welfare Initiative.
+  - Select programmes or orgs: 
+	  - ACE top charities: <https://animalcharityevaluators.org/donation-advice/recommended-charities/>
+		- Fish Welfare Initiative.
+		- Previously estimated things: Beyond Burger
   - Estimate the value of each org.
-		- [-] Faunalytics: Too meta, postpone until later.
-		- [ ] The Humane League
-			- [ ] Open Wings Alliance
-		- [ ] The Good Food Institute
-			- [ ] Program #1
-			- [ ] Program #2
-			- [ ] ...
-		- [ ] Wild Animal Initiative: Rough estimate for the organization.
-    - [x] Fish Welfare Initiative 
+    - Planned: 
+			- [ ] Beyond Meat
+			- [x] Fish Welfare Initiative (fish)
+			- [ ] The Humane League: Open Wings Alliance (chickens)
+		- Discarded/Postponed:
+			- [-] Faunalytics: Too meta, postpone until later.
+			- [-] Wild Animal Initiative: Unclear what the cost-effectiveness of a wild animal intervention would be, and therefore unclear what the value of redirecting funding would be. Postpone
+			- [-] The Good Food Institute: $55M: too many programmes. Maybe try to get ACE to estimate a few of their more important programmes.
 	- ...
 */
 
