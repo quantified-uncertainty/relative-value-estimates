@@ -1,7 +1,7 @@
 /* Index
 - Estimate a few animal QALYs
   - [x] Cow
-	- [ ] Pigs
+	- [x] Pigs
 	- [ ] Chicken
 	- [ ] Fish
 - Put them together to estimate a few programmes or organizations
@@ -10,10 +10,12 @@
 */
 
 // Value of a cow year
-value_happy_cow_year_in_human_qalys = 0.1 to 1
-value_tortured_cow_year_in_human_qalys = -(0.5 to 2)
+value_happy_cow_year_in_human_qalys = 0.05 to 0.3
+value_tortured_cow_year_in_human_qalys = -(0.1 to 2)
 value_farmed_cow_year_in_human_qalys = normal({ p10: -0.2, p90: 0.1 })
 // ^ purely subjective estimates
+// the thing is, it doesn't seem that unlikely to me
+// that cows do lead net positive lives
 weight_cow = mixture([450 to 1800, 360 to 1100], [1/2,1/2])
 lifetime_cow = (30 to 42) / 12
 calories_cow = mixture(0.8M to 1.4M, 500k to 700k * weight_cow/1000) 
@@ -26,3 +28,25 @@ cow_estimates = {
 	lifetime: lifetime_cow
 }
 
+// Value of a pig year
+
+value_happy_pig_year_in_human_qalys = 0.02 to 0.3
+value_tortured_pig_year_in_human_qalys = -(0.05 to 2)
+value_farmed_pig_year_in_human_qalys = normal({ p5: -0.5, p95: 0.05 })
+// ^ purely subjective estimates
+lifetime_pig = (5 to 7) / 12
+weight_pig = 110 to 150 // kilograms 
+kilograms_in_pounds = 1/0.454
+// ^ "Most market hogs are raised for optimal meat quality and yield between 5-7 months of age, or between 250-325 pounds"
+// ^ https://s3.wp.wsu.edu/uploads/sites/2049/2021/02/02.21PorkFabVideoDataFactSheet02.16.2021.pdf
+meat_yield_pig = (55 to 58)/100
+calories_per_pound_of_pig_meat = 900 to 1.1k
+calories_pig = weight_pig * meat_yield_pig * kilograms_in_pounds * calories_per_pound_of_pig_meat
+// ^ see <https://www.quora.com/About-how-many-calories-are-in-an-entire-pig>
+
+pig_estimates = {
+  name: "pig",
+	value_year_in_human_qalys: value_farmed_pig_year_in_human_qalys,
+	calories: calories_pig,
+	lifetime: lifetime_pig
+}
