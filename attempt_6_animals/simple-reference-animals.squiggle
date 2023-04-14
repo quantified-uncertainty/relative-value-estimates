@@ -1,0 +1,28 @@
+/* Index
+- Estimate a few animal QALYs
+  - [x] Cow
+	- [ ] Pigs
+	- [ ] Chicken
+	- [ ] Fish
+- Put them together to estimate a few programmes or organizations
+  - Select programmes or orgs
+	- ...
+*/
+
+// Value of a cow year
+value_happy_cow_year_in_human_qalys = 0.1 to 1
+value_tortured_cow_year_in_human_qalys = -(0.5 to 2)
+value_farmed_cow_year_in_human_qalys = normal({ p10: -0.2, p90: 0.1 })
+// ^ purely subjective estimates
+weight_cow = mixture([450 to 1800, 360 to 1100], [1/2,1/2])
+lifetime_cow = (30 to 42) / 12
+calories_cow = mixture(0.8M to 1.4M, 500k to 700k * weight_cow/1000) 
+// ^ kilocalories, averaging two estimates from <https://www.reddit.com/r/theydidthemonstermath/comments/a8ha9r/how_many_calories_are_in_a_whole_cow/>
+
+cow_estimates = {
+  name: "cow",
+	value_year_in_human_qalys: value_farmed_cow_year_in_human_qalys,
+	calories: calories_cow,
+	lifetime: lifetime_cow
+}
+

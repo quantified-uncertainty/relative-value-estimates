@@ -1,0 +1,79 @@
+// Outline the different worldviews and their weights
+
+wordviews = {
+  egoism: {
+		weight: 0.05,
+		description: "Only source of value is oneself."
+	},
+	human_centric_consequentialism: {
+		weight: 0.4,
+		description: "Most humans, including oneself, are worth about equal"
+	},
+	complex_animal_inclusive_consequentialism: {
+		weight: 0.4,
+		description: "One's circle of concern also includes ''complex'' animals, like most mammals. Value is a assigned in proportion to the complexity of their experience and their ability to suffer"
+	},
+	small_animal_inclusive_consequentialism: {
+		weight: 0.15,
+		description: "One's circle of concern includes all animals, including e.g., invertebrates. Value is proportional to their estimated chance of sentience and their estimated ability to suffer."
+	}
+}
+
+// Helpers 
+getWeightedValue(x) = x.egoism * wordviews.egoism.weight + x.human_centric_consequentialism * wordviews.human_centric_consequentialism + x.complex_animal_inclusive_consequentialism * worldviews.complex_animal_inclusive_consequentialism.weight + x.small_animal_inclusive_consequentialism * worlviews.small_animal_inclusive_consequentialism.weight
+
+// Value of oneself, normalized to 1 across all worldviews
+value_of_oneself_in_worldviews: {
+	egoism: 1,
+	human_centric_consequentialism: 1,
+	complex_animal_inclusive_consequentialism: 1,
+	small_animal_inclusive_consequentialism: 1
+}
+item_oneself = {
+  description: "Value you assign to your own lifetime",
+  value_in_worldviews: value_of_oneself_in_worldviews,
+	weighted_value: getWeightedValue(value_of_oneself_in_worldviews)
+}
+
+// Value of one year of one's life
+life_expectancy = 60 to 100
+value_of_one_year_of_ones_life_in_worldviews: {
+	egoism: 1/life_expectancy,
+	human_centric_consequentialism: 1/life_expectancy,
+	complex_animal_inclusive_consequentialism: 1/life_expectancy,
+	small_animal_inclusive_consequentialism: 1/life_expectancy
+}
+item_oneself = {
+  description: "Value you assign to one year of your own life",
+  value_in_worldviews: value_of_one_year_of_ones_life_in_worldviews,
+	weighted_value: getWeightedValue(value_of_one_year_of_ones_life_in_worldviews)
+}
+
+// Value of a cow year
+value_of_cow_year_in_human_years = 0.1 to 1
+// ^ really want that beta syntax, though, to bound it at 1 elegantly.
+value_of_a_cow_year_in_worldview = {
+	egoism: 0,
+	human_centric_consequentialism: 0,
+	complex_animal_inclusive_consequentialism: value_of_cow_year_in_human_years,
+	small_animal_inclusive_consequentialism: value_of_cow_year_in_human_years
+}
+weight_cow = mixture([450 to 1800, 360 to 1100], [1/2,1/2])
+cow_estimates = {
+  name: "cow",
+  value_in_worldviews_of_year: value_of_one_year_of_ones_life_in_worldviews,
+	weighted_value_of_year: getWeightedValue(value_of_one_year_of_ones_life_in_worldviews),
+	calories: mixture(0.8M to 1.4M, 500k to 700k * weight_cow/1000) // kilocalories, averaging two estimates from <https://www.reddit.com/r/theydidthemonstermath/comments/a8ha9r/how_many_calories_are_in_a_whole_cow/>
+	lifetime_of_cow: (30 to 42) / 12
+}
+
+getAnimalItems = {|animal_estimates|
+  item_year = {
+		description: "Value you assign to a " + animal.name + " year",
+		value_in_worlviews: 
+	}
+
+	[item_year, item_lifetime, item_calory, item_kilogram]
+}
+cow_items = getAnimalItems(cow_estimates)
+
