@@ -9,7 +9,7 @@
 	- ...
 */
 
-// Value of a cow year
+// Cows
 value_happy_cow_year_in_human_qalys = 0.05 to 0.3
 value_tortured_cow_year_in_human_qalys = -(0.1 to 2)
 value_farmed_cow_year_in_human_qalys = normal({ p10: -0.2, p90: 0.1 })
@@ -24,12 +24,12 @@ calories_cow = mixture(0.8M to 1.4M, 500k to 700k * weight_cow/1000)
 cow_estimates = {
   name: "cow",
 	value_year_in_human_qalys: value_farmed_cow_year_in_human_qalys,
+  weight: weight_cow,
 	calories: calories_cow,
 	lifetime: lifetime_cow
 }
 
-// Value of a pig year
-
+// Pigs
 value_happy_pig_year_in_human_qalys = 0.02 to 0.3
 value_tortured_pig_year_in_human_qalys = -(0.05 to 2)
 value_farmed_pig_year_in_human_qalys = normal({ p5: -0.5, p95: 0.05 })
@@ -47,12 +47,12 @@ calories_pig = weight_pig * meat_yield_pig * kilograms_in_pounds * calories_per_
 pig_estimates = {
   name: "pig",
 	value_year_in_human_qalys: value_farmed_pig_year_in_human_qalys,
+  weight: weight_pig,
 	calories: calories_pig,
 	lifetime: lifetime_pig
 }
 
 // Chickens (broilers)
-
 value_happy_chicken_year_in_human_qalys = 0.001 to 0.05
 value_tortured_chicken_year_in_human_qalys = -(0.01 to 0.2)
 value_farmed_chicken_year_in_human_qalys = value_tortured_chicken_year_in_human_qalys/(1 to 3)
@@ -62,12 +62,35 @@ weight_chicken = 2 to 3.5
 // ^ kilograms. Not very sure, though
 kilograms_in_pounds = 1/0.454
 calories_per_pound_of_chicken_meat = 500 to 700
+// ^ also not sure
 calories_chicken = weight_chicken * kilograms_in_pounds * calories_per_pound_of_chicken_meat
 // ^ <https://teddit.nunosempere.com/r/1500isplenty/comments/m7uck1/how_to_figure_out_calories_of_a_whole_chicken/>
 
 chicken_estimates = {
   name: "chicken",
 	value_year_in_human_qalys: value_farmed_chicken_year_in_human_qalys,
+  weight: weight_chicken,
 	calories: calories_chicken,
 	lifetime: lifetime_chicken
+}
+
+// Fish (salmon)
+value_happy_salmon_year_in_human_qalys = 0.001 to 0.01
+value_tortured_salmon_year_in_human_qalys = -(0.002 to 0.02)
+value_farmed_salmon_year_in_human_qalys = normal({ p5: -0.02, p95: 0.01 })
+// ^ purely subjective estimates
+lifetime_salmon = 2 to 3
+// https://thehumaneleague.org.uk/article/how-long-do-salmon-live
+weight_salmon = 3.5 to 5 // kilograms 
+// ^ https://www.wildcoastsalmon.com/salmonlifecycle
+calories_per_kilogram_of_salmon_meat = 1700 to 2100
+calories_salmon = weight_salmon * calories_per_kilogram_of_salmon_meat
+// ^ see <https://www.quora.com/How-many-calories-are-in-1kg-of-salmon>
+
+salmon_estimates = {
+  name: "salmon",
+	value_year_in_human_qalys: value_farmed_salmon_year_in_human_qalys,
+  weight: weight_salmon,
+	calories: calories_salmon,
+	lifetime: lifetime_salmon
 }
