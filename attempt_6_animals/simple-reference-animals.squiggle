@@ -1,25 +1,3 @@
-/* Index
-- Estimate a few animal QALYs
-  - [x] Cow
-	- [x] Pigs
-	- [x] Chicken
-	- [x] Fish
-- Put them together to estimate a few programmes or organizations
-  - Select programmes or orgs: 
-	  - ACE top charities: <https://animalcharityevaluators.org/donation-advice/recommended-charities/>
-		- Fish Welfare Initiative.
-		- Previously estimated things: Beyond Burger
-  - Estimate the value of each org.
-    - Planned: 
-			- [ ] Beyond Meat
-			- [x] Fish Welfare Initiative (fish)
-			- [ ] The Humane League: Open Wings Alliance (chickens)
-		- Discarded/Postponed:
-			- [-] Faunalytics: Too meta, postpone until later.
-			- [-] Wild Animal Initiative: Unclear what the cost-effectiveness of a wild animal intervention would be, and therefore unclear what the value of redirecting funding would be. Postpone
-			- [-] The Good Food Institute: $55M: too many programmes. Maybe try to get ACE to estimate a few of their more important programmes.
-	- ...
-*/
 
 // Cows
 value_happy_cow_year_in_human_qalys = 0.05 to 0.3
