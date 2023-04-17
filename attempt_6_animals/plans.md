@@ -14,10 +14,13 @@
   - [x] Chicken
   - [x] Fish
 - Estimate the value of a few animal charities, corresponding to helping the four animals above:
-  - [ ] Beyond Meat (cows)
-  - [ ] Something for pigs?
-  - [x] Fish Welfare Initiative (fish)
-  - [ ] The Humane League: Open Wings Alliance (chickens)
+  - Orgs chosen: 
+      - [ ] Beyond Meat (cows)
+      - [ ] Something for pigs?
+      - [x] Fish Welfare Initiative (fish)
+      - [x] The Humane League: Open Wings Alliance (chickens)
+  - Add budget and therefore cost-effectiveness 
+  - Specify the timeline value estimates apply to
 - Make these estimates valuable
   - [ ] Whip them into shape for the relative values project
   - [ ] Add some explanations, and send them to ACE

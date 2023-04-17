@@ -1,4 +1,3 @@
-
 // Cows
 value_happy_cow_year_in_human_qalys = 0.05 to 0.3
 value_tortured_cow_year_in_human_qalys = -(0.1 to 2)
@@ -85,16 +84,19 @@ salmon_estimates = {
 	lifetime: lifetime_salmon
 }
 
-/* Fish Welfare Initiative 
+/* 
+## Fish Welfare Initiative 
 
 Sources: 
+
 - https://www.fishwelfareinitiative.org/impact
 - https://forum.effectivealtruism.org/posts/T5fSphiK6sQ6hyptX/opinion-estimating-invertebrate-sentience#Peter_Hurford
 - https://forum.effectivealtruism.org/posts/Qk3hd6PrFManj8K6o/rethink-priorities-welfare-range-estimates
 - https://nunosempere.com/blog/2023/02/19/bayesian-adjustment-to-rethink-priorities-welfare-range-estimates/
 
-Key simplification: assume that all fish are salmon. This is inaccurate, because salmon is a very particular & expensive species of fish. But I think it's ok to start with. Later I could easily add different species.
+What am I estimating: Impact of FWI over the lifetime of the organization, until March 17, 2023, the date their impact page (<https://www.fishwelfareinitiative.org/impact>) was last updated. Here is a snapshot: <https://web.archive.org/web/20230322150326/https://www.fishwelfareinitiative.org/impact>.
 
+Key simplification: assume that all fish are salmon. This is inaccurate, because salmon is a very particular & expensive species of fish. But I think it's ok to start with. Later I could easily add different species.
 */
 
 fish_potentially_helped = 1M to 2M
@@ -116,4 +118,44 @@ value_fwi_shrimp =
   value_of_shrimp_in_fish
 
 value_fwi_so_far = value_fwi_fish + value_fwi_shrimp
-value_fwi_so_far
+
+fwi_estimates = {
+  name: "fwi",
+	value: value_fwi_so_far,
+}
+
+/*
+## Open Wing Alliance
+
+Sources: 
+- <https://animalcharityevaluators.org/charity-review/the-humane-league/#comprehensive-review>
+- <https://thehumaneleague.org/article/owa-year-in-review-2022>
+
+What am I estimating: Impact of corporate commitments that OWA made happen in 2022.
+
+Notes on the estimation: The number of corporate campaigns is from OWA's own reporting. The number of chickens affected and the improvement per chicken is pretty much pulled out of my ass.
+
+Key simplification: I am using the welfare numbers for meat chickens, rather than for egg-laying chicken. This will give inaccurate results, but hopefully not by many orders of magnitude.
+*/
+
+num_corporate_commitments = 150 to 200 
+// ^ "nearly 200 commitments", from https://thehumaneleague.org/article/owa-year-in-review-2022
+average_num_chickens_per_year_per_commitment = 5k to 20k 
+// this: <https://thehumaneleague.org/article/victory-toridoll-releases-a-global-cage-free-commitment?ms=c_blog>
+// mentions 40k, but also seems to be the most impressive one for 2022 (?)
+frequency_promises_are_fulfilled = 0.4 to 0.9
+average_duration_fulfilled_commitments = 1 to 10 // years. Could be more?
+average_reduction_in_suffering_of_commitment_per_chicken = 0.05 to 0.3 // pulled out of my ass.
+
+value_owa_2022 = num_corporate_commitments * 
+  average_num_chickens_per_year_per_commitment *
+  frequency_promises_are_fulfilled *
+  average_duration_fulfilled_commitments *
+  average_reduction_in_suffering_of_commitment_per_chicken *
+  value_tortured_chicken_year_in_human_qalys *
+	lifetime_chicken
+
+owa_estimate = {
+  name: "Open Wing Alliance",
+	value: value_owa_2022
+}
