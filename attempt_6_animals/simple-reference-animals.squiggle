@@ -363,7 +363,7 @@ organization_items = [
 ]
 
 // All items
-items = [animal_estimates, organization_items] -> List.flatten -> List.map({|item| [item.name, item]}) -> Dict.fromList
+items = [animal_estimates_disaggregated, organization_items] -> List.flatten -> List.map({|item| [item.name, item]})  -> Dict.fromList
 
 // Result
 f(a, b) = [items[a].value, items[b].value]
