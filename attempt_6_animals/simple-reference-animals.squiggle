@@ -276,7 +276,7 @@ compassion_usa_item = {
 // Dansk Vegetarisk Forening (DVF) 
 // Dansk Vegetarisk Forening (DVF) is a Denmark-based organization dedicated to increasing the availability of animal-free products, strengthening the animal advocacy movement, and reducing the consumption of animal products. DVF specifically engages in policy work on agricultural reform and the right to access plant-based food, as well as corporate and institutional outreach to food companies to make plant-based options more available. They also conduct research, run a product-labeling scheme, offer an educational program for children and youth, and lead a public outreach program promoting plant-based nutrition. DVF received Movement Grants from ACE in 2020 and 2022. Read Review.
 value_dvf = (value_reference_top_animal_org * tt(0.01 to 3)) // just a reference
-dv_itemf = {
+dvf_item = {
   name: "Dansk Vegetarisk Forening (DVF) (2022)",
   value: value_dvf -> ss
 }
@@ -359,11 +359,12 @@ animal_estimates_disaggregated = List.map(animal_estimates, toAllAnimalEstimates
 organization_items = [
   fwi_item, owa_item, beyond_meat_item, // reference, mechanisitcally estimated orgs
   faunalytic_item, humane_league_item, gfi_item, wai_item, // top orgs
-  chkd_item, compassion_usa_item, dv_itemf, dva_item, fiapo_item, mii_item, mfa_item, value_new_harvest, new_harvest_item, sinergia_animal_item, xiaobuVEGAN_item, organization_items  // standout orgs
+  chkd_item, compassion_usa_item, dvf_item, dva_item, fiapo_item, mii_item, mfa_item, new_harvest_item, sinergia_animal_item, xiaobuVEGAN_item, // standout orgs
 ]
 
 // All items
+items = [animal_estimates, organization_items] -> List.flatten -> List.map({|item| [item.name, item]}) -> Dict.fromList
 
 // Result
-f(a, b) = [vars[a].value, vars[b].value]
-
+f(a, b) = [items[a].value, items[b].value]
+items
