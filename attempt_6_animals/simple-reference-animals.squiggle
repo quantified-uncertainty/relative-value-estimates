@@ -1,3 +1,6 @@
+// Utils
+ss = SampleSet.fromDist
+
 // Cows
 value_happy_cow_year_in_human_qalys = 0.05 to 0.3
 value_tortured_cow_year_in_human_qalys = -(0.1 to 2)
@@ -6,6 +9,7 @@ value_farmed_cow_year_in_human_qalys = normal({ p10: -0.2, p90: 0.1 })
 // the thing is, it doesn't seem that unlikely to me
 // that cows do lead net positive lives
 weight_cow = mixture([450 to 1800, 360 to 1100], [1/2,1/2])
+wastage = 0.3 to 0.5 // should really be a beta
 lifetime_cow = (30 to 42) / 12
 calories_cow = mixture(0.8M to 1.4M, (500k to 700k) * weight_cow/1000) 
 // ^ kilocalories, averaging two estimates from <https://www.reddit.com/r/theydidthemonstermath/comments/a8ha9r/how_many_calories_are_in_a_whole_cow/>
@@ -118,10 +122,11 @@ value_fwi_shrimp =
   value_of_shrimp_in_fish
 
 value_fwi_so_far = value_fwi_fish + value_fwi_shrimp
-
-fwi_estimates = {
-  name: "fwi",
-	value: value_fwi_so_far,
+proportion_fwi_in_2022 = 1/4 to 1/2
+value_fwi  = value_fwi_so_far * proportion_fwi_in_2022
+fwi_item = {
+  name: "Fish Welfare Inititative (2022)",
+	value: value_fwi 
 }
 
 /*
@@ -155,7 +160,184 @@ value_owa_2022 = num_corporate_commitments *
   value_tortured_chicken_year_in_human_qalys *
 	lifetime_chicken
 
-owa_estimate = {
-  name: "Open Wing Alliance",
+owa_item = {
+  name: "Open Wing Alliance (2022)",
 	value: value_owa_2022
 }
+
+/* Beyond Meat */
+
+beyond_meat_price_per_pound = 5 to 12
+beyond_meat_revenues = 375M to 415M
+beyond_meat_pounds_sold = beyond_meat_revenues / beyond_meat_price_per_pound
+
+wastage_cow = 0.5 to 0.7 // should be a beta
+pounds_of_meat_per_cow = weight_cow * kilograms_in_pounds *  wastage_cow
+cows_saved_if_all_meat_was_counterfactual = beyond_meat_pounds_sold / pounds_of_meat_per_cow
+
+chance_purchase_was_counterfactual = 0.05 to 0.25 // should eventually be a beta
+// I imagine that most people would have chosen a vegetarian alternative
+// but also that having tasty meat replacements makes it easier to
+// keep being a vegetarian.
+// Very uncertain, though
+
+value_beyond_meat_year =  cows_saved_if_all_meat_was_counterfactual * 
+  chance_purchase_was_counterfactual * 
+  lifetime_cow *
+  value_farmed_cow_year_in_human_qalys
+
+beyond_meat_item = {
+  name: "Beyond Meat (2022)",
+  value: value_beyond_meat_year
+}
+
+/* ACE Top Charities */ 
+
+/* From here on, estimates of ACE's top charities are constructed with reference to the above. 
+I consider them to be pretty fake (i.e., not-mechanistic), 
+though they could eventually become something more fleshed out.
+Maybe we could  */
+
+value_reference_fish_org = value_fwi_so_far 
+value_reference_chicken_org = owa_estimate
+value_reference_cow_org = beyond_meat_estimate / (10 to 1k) // beyond meat seems significantly more scaled up than the avg 
+value_reference_top_animal_org = mixture(
+  [value_reference_cow_org, value_reference_chicken_org, value_reference_chicken_org], 
+  [1/3, 1/3, 1/3]
+)
+
+// Faunalytics
+faunalytics_multiplier = truncateRight(0.01 to 20, 200)
+estimate_faunalytics_value = value_reference_top_animal_org * faunalytics_multiplier
+faunalytic_item = {
+  name: "Faunalytics (2022)",
+  value: estimate_faunalytics
+}
+
+// The Humane League
+
+owa_equivalents_humane_league = 0.5 to 5 // 
+humane_league_value = owa_estimate * owa_equivalents_humane_league
+humane_league_item = {
+  name: "The Humane League (2022)",
+  value:  humane_league_value
+}
+
+// The Good Food Institute
+beyond_meat_equivalents_gfi = 0.01 to 1
+value_gfi = mixture(
+  [ 
+    beyond_meat_equivalents_gfi * value_beyond_meat_year,
+    value_reference_top_animal_org
+  ],
+  [ 2/3, 1/3]
+)
+gfi_item = {
+  name: "Good Food Institute (2022)",
+  value: value_gfi
+}
+
+// Wild Animal Initiative
+impact_wai_in_fwi_units = mixture(
+  [0, 0.1 to 2, 1 to 1k],
+  [3/10, 6/10, 1/10]
+) // i.e., some of the time it produces something really valuable
+value_wai = impact_wai_in_fwi_units * value_fwi
+wai_item = {
+  name: "Wild Animal Inititative (2022)",
+  value: value_wai
+}
+
+/* Standout charities */
+// Modelled in way less detail
+tt(dist) = truncateRight(dist, 100)
+
+
+// Çiftlik Hayvanlarını Koruma Derneği (CHKD)
+value_chkd = mixture(
+  [value_reference_chicken_org * tt(0.1 to 5), value_reference_fish_org * tt(0.1 to 5)],
+  [1/2, 1/2]
+) 
+item_chkd = {
+  name: "Çiftlik Hayvanlarını Koruma Derneği (CHKD) (2022)",
+  value: value_chkd
+}
+
+// Compassion USA
+// Compassion USA is the U.S. branch of the international organization Compassion in World Farming (CIWF), which works to improve farmed animal welfare and end all factory farming practices. Compassion USA engages in corporate outreach to encourage food companies to implement improved animal welfare policies, especially for farmed chickens. They also run a public engagement program to encourage greater consumer awareness of animal welfare issues and offer resources to encourage individuals to reduce their consumption of animal products. Compassion USA has been an ACE Standout Charity since November 2017.  Read Review.
+value_compassion_usa = mixture(
+  [value_reference_chicken_org * tt(0.05 to 10), value_reference_top_animal_org * tt(0.05 to 10)],
+  [1/2, 1/2]
+) 
+item_compassion_usa = {
+  name: "Compassion USA (2022)",
+  value: value_compassion_usa
+}
+
+// Dansk Vegetarisk Forening (DVF) 
+// Dansk Vegetarisk Forening (DVF) is a Denmark-based organization dedicated to increasing the availability of animal-free products, strengthening the animal advocacy movement, and reducing the consumption of animal products. DVF specifically engages in policy work on agricultural reform and the right to access plant-based food, as well as corporate and institutional outreach to food companies to make plant-based options more available. They also conduct research, run a product-labeling scheme, offer an educational program for children and youth, and lead a public outreach program promoting plant-based nutrition. DVF received Movement Grants from ACE in 2020 and 2022. Read Review.
+value_dvf = (value_reference_top_animal_org * tt(0.01 to 3)) // just a reference
+item_dvf = {
+  name: "Dansk Vegetarisk Forening (DVF) (2022)",
+  value: value_dvf
+}
+
+// Dharma Voices for Animals (DVA) is the only international Buddhist animal rights organization in the world. The majority of their work takes place in Sri Lanka, Thailand, Vietnam, and the U.S., but they also work in Germany, Brazil, Finland, Myanmar, and Australia. DVA’s programs align with the specific contexts and priorities of the countries where they work. Many of their programs focus on diet change; however, they also lobby for animal welfare legislation, provide veterinary care, and work with restaurant owners to encourage them to transition their business to veganism. DVA has been an ACE Standout Charity since November 2021. Read Review.
+value_dva = (value_reference_top_animal_org * tt(0.001 to 100))
+item_dva = {
+  name: "Dharma Voices for Animals (202)",
+  value: value_dva
+}
+
+// Federation of Indian Animal Protection Organisations (FIAPO) is an India-based organization that is primarily dedicated to reducing farmed animal suffering. To a lesser extent, they also work to reduce the suffering of companion animals and animals used for entertainment. Their work focuses on improving animal welfare standards, strengthening the animal advocacy movement, increasing the availability of animal-free products, influencing legislation change, and providing direct help and veterinary care to animals. They also run a vegan pledge program to encourage individuals to decrease their consumption of animal products. FIAPO has been an ACE Standout Charities since December 2019. Read Review.
+value_fiapo = value_reference_top_animal_org * tt(0.01 to 2)
+item_fiapo = {
+  name: "Federation of Indian Animal Protection Organisations (2022)",
+  value: value_fiapo
+}
+
+//Fish Welfare Initiative (FWI) is one of few organizations to work exclusively on improving the welfare standards of farmed fishes. The majority of their work takes place in India, but they also work in China and the Philippines. They run the Alliance for Responsible Aquaculture (ARA), which sets standards . FWI also engages in corporate outreach to improve fish welfare across the supply chain and conducts field research that informs standard setting for welfare improvements.  Read Review
+// Already modelled
+
+//Material Innovation Initiative (MII) works to reduce farmed animal suffering by increasing the availability of animal-free products and strengthening the animal advocacy movement. They produce research on animal-free alternatives to existing materials used in the fashion, automotive, and homegoods industries, and they work with investors, corporations, and entrepreneurs to support the development of new products and production processes. They also host events, such as conferences, to create opportunities for the development of new networks in the next-gen materials industry. MII has been an ACE Standout Charity since November 2021. Read Review.
+value_mii = value_gfi * tt(0.005 to 0.5)
+item_mii = {
+  name: "Material Innovation Initiative (2022)",
+  value: value_mii
+}
+
+// Mercy For Animals (MFA) operates in the U.S., Brazil, Canada, Hong Kong, India, and Mexico. MFA’s work focuses on strengthening the animal advocacy movement and improving animal welfare standards, as well as decreasing the consumption of animal products and increasing the availability of animal-free products. They engage in a variety of farmed animal advocacy programs, often involving the distribution of footage from their undercover investigations of factory farms, which they primarily promote via media outreach and online campaigns. MFA also engage in corporate and institutional outreach, research, lobbying, and policy work. They recruit and train volunteers and support farmers in transitioning away from animal agriculture. MFA was selected as an ACE Top Charity several times between 2014 and 2017, and they have been a Standout Charity since November 2021. Read Review.
+value_mfa = value_reference_top_animal_org * tt(0.05 to 5)
+item_mfa = {
+  name: "Mercy For Animals (2022)",
+  value: value_mfa
+}
+
+// New Harvest funds research in cellular agriculture, i.e., the development of animal products using cells instead of animals. Through grant programs, they fund graduate and postdoctoral research projects in the field of cellular agriculture, as well as undergraduate and master-level projects for researchers-in-training. They also carry out public engagement and community-building activities via their podcast, blog, research publications, and research summaries. New Harvest was selected as an ACE Standout Charity in both December 2015 and November 2021. Read Review.
+value_new_harvest = value_gfi * tt(0.01 to 0.5)
+item_new_harvest = {
+  name: "New Harvest (2022)",
+  value: value_new_harvest
+}
+
+// Sinergia Animal operates in Indonesia, Thailand, Argentina, Brazil, Colombia, Uruguay, Chile, Ecuador, and Peru. They work to improve farmed animal welfare standards, increase the availability of animal-free products, decrease the consumption of animal products, and strengthen the animal advocacy movement. Sinergia Animal engages in corporate outreach to secure animal welfare commitments from major retailers. They also engage in investor and media outreach, policy work, investigations, individual and producer outreach, institutional outreach, and research. Sinergia Animal has been an ACE Standout Charity since November 2018. Read Review.
+value_sinergia_animal = value_reference_top_animal_org * tt(0.05 to 20)
+item_sinergia_animal = {
+  name: "Sinergia Animal (2022)",
+  value: value_sinergia_animal
+}
+
+//
+//xiaobuVEGAN is a China-based organization working to reduce farmed animal suffering. Their work aims to increase the availability of animal-free products, strengthen the animal advocacy movement, and decrease the consumption of animal products. xiaobuVEGAN engages in institutional outreach, runs an app that provides resources about vegan options in China, and supports dietary change via their vegan challenge program. xiaobuVEGAN has been an ACE Standout Charity since November 2021. Read Review.
+value_xiaobuVEGAN = value_reference_top_animal_org * truncateRight(mixture([0.1 to 10, 1 to 100], [7/10, 3/10]), 1000)
+item_xiaobuVEGAN = {
+  name: "xiaobuVEGAN (2022)",
+  value: value_xiaobuVEGAN
+}
+
+vars = {
+
+}
+
+f(a, b) = [vars[a].value, vars[b].value]
+vars
