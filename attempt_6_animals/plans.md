@@ -7,6 +7,7 @@
 - [-] Do a model for all ACE charities
 - [x] Add skeleton for all ACE charities
 - [ ] Transform whatever needs to be transformed to sample sets so that correlations are preserved.
+- [ ] Take care of positive/negative sign value
 
 ## Plans after a bit more thinking
 
