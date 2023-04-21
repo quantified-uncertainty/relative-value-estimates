@@ -355,9 +355,21 @@ toAllAnimalEstimates = {|animal|
     animal.calories
 
   result = [
-    ({name: animal.name + " value per year of life", value: value_year_in_human_qalys}),
-    ({name: animal.name + " value per lifetime", value: value_in_lifetime_human_qalys}),
-    ({name: animal.name + " value per calorie", value: value_per_calorie_human_qalys}),    
+    ({
+		  id: animal.name + "value_human_qalys_per_year_of_life", 
+			name: animal.name + " value per year of life", 
+			value: value_year_in_human_qalys
+		}),
+    ({
+		  id: animal.name + "value_human_qalys_per_lifetime", 
+		  name: animal.name + " value per lifetime", 
+			value: value_in_lifetime_human_qalys
+		}),
+    ({
+		  id: animal.name + "value_human_qalys_per_calorie", 
+		  name: animal.name + " value per calorie", 
+			value: value_per_calorie_human_qaly
+		}),    
   ]
   result
 }
