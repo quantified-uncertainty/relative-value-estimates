@@ -3,11 +3,12 @@
 - [x] Do a model for a few animal QALYs
 - [x] Do a model for a few animal foods
 - [ ] Have a version of foodimpacts
-- [ ] Do a model for some animal charities
+- [x] Do a model for some animal charities
 - [-] Do a model for all ACE charities
 - [x] Add skeleton for all ACE charities
-- [ ] Transform whatever needs to be transformed to sample sets so that correlations are preserved.
-- [ ] Take care of positive/negative sign value
+- [x] Add very rudimentary estimates for all ACE charities
+- [x] Transform whatever needs to be transformed to sample sets so that correlations are preserved.
+- [x] Take care of positive/negative sign value
 
 ## Plans after a bit more thinking
 

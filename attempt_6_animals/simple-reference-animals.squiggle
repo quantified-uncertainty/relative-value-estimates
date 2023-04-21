@@ -10,9 +10,9 @@ value_farmed_cow_year_in_human_qalys = normal({ p10: -0.2, p90: 0.1 })
 // the thing is, it doesn't seem that unlikely to me
 // that cows do lead net positive lives
 weight_cow = mixture([450 to 1800, 360 to 1100], [1/2,1/2])
-wastage = 0.3 to 0.5 // should really be a beta
+non_wastage_proportion_cow = 0.5 to 0.7 -> ss // should be a beta. 
 lifetime_cow = (30 to 42) / 12
-calories_cow = mixture(0.8M to 1.4M, (500k to 700k) * weight_cow/1000) 
+calories_cow = mixture(0.8M to 1.4M, (500k to 700k) * (weight_cow * non_wastage_proportion_cow)/1000) 
 // ^ kilocalories, averaging two estimates from <https://www.reddit.com/r/theydidthemonstermath/comments/a8ha9r/how_many_calories_are_in_a_whole_cow/>
 
 cow_estimates = {
@@ -172,8 +172,7 @@ beyond_meat_price_per_pound = 5 to 12
 beyond_meat_revenues = 375M to 415M
 beyond_meat_pounds_sold = beyond_meat_revenues / beyond_meat_price_per_pound
 
-wastage_cow = 0.5 to 0.7 // should be a beta
-pounds_of_meat_per_cow = weight_cow * kilograms_in_pounds *  wastage_cow
+pounds_of_meat_per_cow = weight_cow * kilograms_in_pounds *  non_wastage_proportion_cow
 cows_saved_if_all_meat_was_counterfactual = beyond_meat_pounds_sold / pounds_of_meat_per_cow
 
 chance_purchase_was_counterfactual = 0.05 to 0.25 // should eventually be a beta
