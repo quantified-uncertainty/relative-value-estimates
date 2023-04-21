@@ -18,7 +18,7 @@ cat simple-reference-animals.squiggle |
   uniq -c                             |
   sort -nr                            | # ^same as above
   grep "\."                           | # select words with a dot in them
-  awk '{if($1 > 1) printf $0 "\n"}'   | # have a threshold of 2 mentions
+  awk '{if($1 > 0) printf $0 "\n"}'   | # have a threshold of 2 mentions
 	                                      # 0: definition which will not have a dot
 																				# 1: first usage
 																				# 2: second usage 
