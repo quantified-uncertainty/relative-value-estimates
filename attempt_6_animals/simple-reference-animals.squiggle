@@ -10,7 +10,7 @@ value_farmed_cow_year_in_human_qalys = normal({ p10: -0.2, p90: 0.1 })
 // the thing is, it doesn't seem that unlikely to me
 // that cows do lead net positive lives
 weight_cow = mixture([450 to 1800, 360 to 1100], [1/2,1/2])
-non_wastage_proportion_cow = 0.5 to 0.7 -> ss // should be a beta. 
+non_wastage_proportion_cow = (0.5 to 0.7) -> ss // should be a beta. 
 lifetime_cow = (30 to 42) / 12
 calories_cow = mixture(0.8M to 1.4M, (500k to 700k) * (weight_cow * non_wastage_proportion_cow)/1000) 
 // ^ kilocalories, averaging two estimates from <https://www.reddit.com/r/theydidthemonstermath/comments/a8ha9r/how_many_calories_are_in_a_whole_cow/>
@@ -146,15 +146,15 @@ Key simplification: I am using the welfare numbers for meat chickens, rather tha
 
 num_corporate_commitments = 150 to 200 
 // ^ "nearly 200 commitments", from https://thehumaneleague.org/article/owa-year-in-review-2022
-average_num_chickens_per_year_per_commitment = 5k to 20k 
+mean_num_chickens_per_year_per_commitment = 5k to 20k 
 // this: <https://thehumaneleague.org/article/victory-toridoll-releases-a-global-cage-free-commitment?ms=c_blog>
 // mentions 40k, but also seems to be the most impressive one for 2022 (?)
 frequency_promises_are_fulfilled = 0.4 to 0.9
 average_duration_fulfilled_commitments = 1 to 10 // years. Could be more?
-average_reduction_in_suffering_of_commitment_per_chicken = 0.05 to 0.3 // pulled out of my ass.
+average_reduction_in_suffering_of_commitment_per_chicken = 0.05 to 0.3 // pulled out of thin air/very subjective estimate here.
 
 value_owa_2022 = num_corporate_commitments * 
-  average_num_chickens_per_year_per_commitment *
+  mean_num_chickens_per_year_per_commitment *
   frequency_promises_are_fulfilled *
   average_duration_fulfilled_commitments *
   average_reduction_in_suffering_of_commitment_per_chicken *
@@ -211,7 +211,7 @@ values_reference_orgs = [value_reference_fish_org, value_reference_chicken_org, 
 highly_uncertain_org = List.map(values_reference_orgs, {|dist| 
  lower = inv(dist, 0.05)
  upper = inv(dist, 0.95)
- new_dist = to(lower/100, upper*100)
+ new_dist = normal({p5: lower/100, p95: upper*100})
  new_dist
 }) -> mixture
 add_uncertainty(dist) = mixture([dist, highly_uncertain_org], [95, 5])
@@ -372,7 +372,18 @@ organization_items = [
 ]
 
 // All items
-items = [animal_estimates_disaggregated, organization_items] -> List.flatten -> List.map({|item| [item.name, item]})  -> Dict.fromList
+addId = {|xs|
+  l = List.length(xs)
+  helper_list = List.upTo(0, l-1)
+  result = List.map(helper_list, {|i| 
+    obj = xs[i]
+    obj2 = ({id: "relative_value_animals_" + i})
+    result = Dict.merge(obj, obj2)
+    result
+  })
+  result
+} 
+items = [animal_estimates_disaggregated, organization_items] -> List.flatten -> addId -> List.map({|item| [item.name, item]})  -> Dict.fromList
 
 // Result
 f(a, b) = [items[a].value, items[b].value]
