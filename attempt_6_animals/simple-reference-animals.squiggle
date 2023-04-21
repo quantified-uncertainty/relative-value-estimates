@@ -211,7 +211,7 @@ values_reference_orgs = [value_reference_fish_org, value_reference_chicken_org, 
 highly_uncertain_org = List.map(values_reference_orgs, {|dist| 
  lower = inv(dist, 0.05)
  upper = inv(dist, 0.95)
- new_dist = normal({p5: lower/100, p95: upper*100})
+ new_dist = normal({p5: lower*100, p95: upper*100})
  new_dist
 }) -> mixture
 add_uncertainty(dist) = mixture([dist, highly_uncertain_org], [95, 5])
@@ -377,7 +377,7 @@ addId = {|xs|
   helper_list = List.upTo(0, l-1)
   result = List.map(helper_list, {|i| 
     obj = xs[i]
-    obj2 = ({id: "relative_value_animals_" + i})
+    obj2 = ({id: "relative_value_animals_2023_04_n" + i})
     result = Dict.merge(obj, obj2)
     result
   })
