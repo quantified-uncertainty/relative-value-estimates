@@ -106,7 +106,7 @@ Key simplification: assume that all fish are salmon. This is inaccurate, because
 
 fish_potentially_helped = 1M to 2M
 shrimp_potentially_helped = 1M to 2M
-improvement_as_proportion_of_lifetime = 0.05 to 0.5
+improvement_as_proportion_of_lifetime = (0.05 to 0.5) -> ss
 
 value_fwi_fish = 
   fish_potentially_helped * 
@@ -203,15 +203,16 @@ value_reference_chicken_org = owa_item.value
 value_reference_cow_org = beyond_meat_item.value / (10 to 1k) // beyond meat seems significantly more scaled up than the avg 
 value_reference_top_animal_org = mixture(
   [value_reference_cow_org, value_reference_chicken_org, value_reference_chicken_org], 
-  [1/3, 1/3, 1/3]
-)
+  [2/3, 1/3, 1/3]
+) -> ss
 
 // Add uncertainty
 values_reference_orgs = [value_reference_fish_org, value_reference_chicken_org, value_reference_cow_org]
 highly_uncertain_org = List.map(values_reference_orgs, {|dist| 
  lower = inv(dist, 0.05)
  upper = inv(dist, 0.95)
- new_dist = normal({p5: lower*100, p95: upper*100})
+ new_dist = normal({p5: lower*100, p95: upper*100}) 
+ // ^ only works because low < 0 and high>0
  new_dist
 }) -> mixture
 add_uncertainty(dist) = mixture([dist, highly_uncertain_org], [95, 5])
@@ -308,7 +309,7 @@ fiapo_item = {
 // Already modelled
 
 //Material Innovation Initiative (MII) works to reduce farmed animal suffering by increasing the availability of animal-free products and strengthening the animal advocacy movement. They produce research on animal-free alternatives to existing materials used in the fashion, automotive, and homegoods industries, and they work with investors, corporations, and entrepreneurs to support the development of new products and production processes. They also host events, such as conferences, to create opportunities for the development of new networks in the next-gen materials industry. MII has been an ACE Standout Charity since November 2021. Read Review.
-value_mii = value_gfi * tt(0.005 to 0.5)
+value_mii = gfi_item.value * tt(0.005 to 0.5)
 mii_item = {
   name: "Material Innovation Initiative (2022)",
   value: value_mii -> add_uncertainty -> ss
